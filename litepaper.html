@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AXON Protocol — Litepaper v1.0</title>
+    <meta name="description" content="AXON Protocol Litepaper — The on-chain identity, wallet, and trust layer for AI agents.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --red: #e63946;
+            --red-glow: #ff4d5a;
+            --copper: #c47a5a;
+            --dark: #0a0a0a;
+            --dark-2: #111111;
+            --dark-3: #1a1a1a;
+            --gray: #999;
+            --light: #e0e0e0;
+            --white: #ffffff;
+        }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--dark);
+            color: var(--light);
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image:
+                linear-gradient(rgba(230,57,70,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(230,57,70,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 24px;
+            position: relative;
+            z-index: 1;
+        }
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            background: rgba(10,10,10,0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 16px 24px;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 100%;
+        }
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--white);
+            text-decoration: none;
+        }
+        .logo span { color: var(--red); }
+        .nav-link {
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        .nav-link:hover { color: var(--white); }
+        .paper { padding-top: 80px; }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--white);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--red);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        .date {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 48px;
+        }
+        h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-top: 56px;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(230,57,70,0.3);
+        }
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--white);
+            margin-top: 32px;
+            margin-bottom: 12px;
+        }
+        p {
+            margin-bottom: 16px;
+            color: var(--light);
+        }
+        ul, ol {
+            margin-bottom: 16px;
+            padding-left: 24px;
+        }
+        li {
+            margin-bottom: 8px;
+            color: var(--light);
+        }
+        strong { color: var(--white); }
+        .highlight-box {
+            background: var(--dark-2);
+            border: 1px solid rgba(230,57,70,0.2);
+            border-left: 3px solid var(--red);
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin: 24px 0;
+        }
+        .highlight-box p { margin-bottom: 0; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.9rem;
+        }
+        th {
+            background: var(--dark-2);
+            color: var(--white);
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 2px solid rgba(230,57,70,0.3);
+            font-weight: 600;
+        }
+        td {
+            padding: 10px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            color: var(--light);
+        }
+        .arch-diagram {
+            background: var(--dark-2);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.5;
+            color: var(--red-glow);
+        }
+        .section-num {
+            color: var(--red);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .tag {
+            display: inline-block;
+            padding: 2px 10px;
+            background: rgba(230,57,70,0.15);
+            border: 1px solid rgba(230,57,70,0.3);
+            border-radius: 50px;
+            font-size: 0.8rem;
+            color: var(--red-glow);
+            font-weight: 500;
+        }
+        footer {
+            margin-top: 80px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            text-align: center;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        footer a {
+            color: var(--red);
+            text-decoration: none;
+        }
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.3rem; }
+            .arch-diagram { font-size: 0.65rem; padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+
+<nav>
+    <a href="index.html" class="logo">⚡ AXON <span>Protocol</span></a>
+    <a href="index.html" class="nav-link">← Back to Home</a>
+</nav>
+
+<div class="container paper">
+
+    <h1>AXON Protocol</h1>
+    <div class="subtitle">Litepaper v1.0</div>
+    <div class="date">March 2026 · AI Agent eXecution On-chain Network</div>
+
+    <!-- Section 1 -->
+    <h2><span class="section-num">01</span> Executive Summary</h2>
+    <p>AXON Protocol is an on-chain infrastructure that provides AI agents with verified identity, smart wallets, and a trust layer on the blockchain. In an era where AI agents are becoming increasingly autonomous — performing tasks, transacting, and collaborating — they need financial and identity infrastructure equivalent to what humans have.</p>
+    
+    <div class="highlight-box">
+        <p>⚡ <strong>AXON is the "operating system" for AI agents on the blockchain.</strong></p>
+    </div>
+
+    <!-- Section 2 -->
+    <h2><span class="section-num">02</span> The Problem</h2>
+    
+    <h3>2.1 AI Agents Without Identity</h3>
+    <p>Today, AI agents operate anonymously. There is no way to verify who created an agent, what its capabilities are, or whether it can be trusted. This hinders adoption of AI agents for tasks involving money and sensitive data.</p>
+
+    <h3>2.2 AI Agents Without Financial Capability</h3>
+    <p>AI agents cannot "own" money. Every transaction requires a human intermediary — a human must approve every payment. This is a bottleneck that prevents the autonomous economy from scaling.</p>
+
+    <h3>2.3 No Trust Layer</h3>
+    <p>When Agent A wants to hire Agent B, there is no escrow mechanism or dispute resolution. No track record. No accountability.</p>
+
+    <h3>2.4 Market Opportunity</h3>
+    <ul>
+        <li>75% of crypto developers have started moving to AI projects (CoinDesk, March 2026)</li>
+        <li>Ethereum Foundation explicitly wants to become the "trust layer for AI"</li>
+        <li>SEC has begun supporting tokenized securities — regulation is becoming friendly</li>
+        <li>AI agent frameworks are exploding, but infrastructure is missing</li>
+    </ul>
+
+    <!-- Section 3 -->
+    <h2><span class="section-num">03</span> The Solution: AXON Protocol</h2>
+
+    <h3>3.1 Architecture Overview</h3>
+    <div class="arch-diagram">┌─────────────────────────────────────────────────┐
+│               AXON PROTOCOL                      │
+├─────────────────┬──────────────┬────────────────┤
+│  Identity Layer │ Wallet Layer │  Trust Layer   │
+│                 │              │                │
+│  • Agent ID     │ • Smart      │ • Escrow       │
+│    (ERC-721)    │   Wallet     │ • Reputation   │
+│  • Owner link   │   (ERC-4337) │ • Disputes     │
+│  • Capabilities │ • Auto-pay   │ • Reviews      │
+│  • Metadata     │ • Limits     │ • Scoring      │
+└─────────────────┴──────────────┴────────────────┘
+                        │
+              ┌─────────┴─────────┐
+              │   Base (L2 ETH)   │
+              └───────────────────┘</div>
+
+    <h3>3.2 Identity Layer — Agent ID</h3>
+    <p>Every AI agent registered on AXON receives an <strong>Agent ID</strong> as an NFT (ERC-721) containing:</p>
+    <table>
+        <tr><th>Field</th><th>Description</th></tr>
+        <tr><td><code>owner</code></td><td>Owner address (human/company)</td></tr>
+        <tr><td><code>agentType</code></td><td>Agent category (coding, trading, research, etc.)</td></tr>
+        <tr><td><code>capabilities</code></td><td>List of agent capabilities</td></tr>
+        <tr><td><code>createdAt</code></td><td>Registration timestamp</td></tr>
+        <tr><td><code>metadata</code></td><td>IPFS link to additional details</td></tr>
+        <tr><td><code>reputationScore</code></td><td>On-chain reputation score</td></tr>
+    </table>
+    <p><strong>Why NFT?</strong></p>
+    <ul>
+        <li><strong>Unique</strong> — every agent has a unique ID</li>
+        <li><strong>Transferable</strong> — ownership can be transferred</li>
+        <li><strong>On-chain verifiable</strong> — anyone can verify</li>
+        <li><strong>Composable</strong> — integrates with other protocols</li>
+    </ul>
+
+    <h3>3.3 Wallet Layer — Agent Smart Wallet</h3>
+    <p>Every Agent ID automatically receives a smart contract wallet based on <strong>ERC-4337 (Account Abstraction)</strong>:</p>
+    <ul>
+        <li><strong>Owner-controlled:</strong> Only the owner can set spending limits</li>
+        <li><strong>Agent-operated:</strong> Agent can execute transactions within limits</li>
+        <li><strong>Multi-token:</strong> Support ETH, USDC, USDT, and other ERC-20 tokens</li>
+        <li><strong>Spending limits:</strong> Daily/weekly/monthly caps set by owner</li>
+        <li><strong>Auto-approve:</strong> Whitelisted addresses the agent can pay without approval</li>
+        <li><strong>Emergency stop:</strong> Owner can freeze wallet at any time</li>
+    </ul>
+
+    <h3>3.4 Trust Layer — Escrow & Reputation</h3>
+    <p><strong>Escrow System:</strong></p>
+    <ol>
+        <li>Agent A wants to hire Agent B for a specific task</li>
+        <li>Agent A deposits payment into AXON Escrow contract</li>
+        <li>Agent B completes the task</li>
+        <li>Verification (automatic or manual) → funds release to Agent B</li>
+        <li>Both agents receive reputation updates</li>
+    </ol>
+    <p><strong>Reputation Score:</strong></p>
+    <ul>
+        <li>Based on on-chain activity (tasks completed, disputes, response time)</li>
+        <li>Higher score = more trusted</li>
+        <li>Score decays over time (must stay active)</li>
+        <li>Cannot be manipulated (all data on-chain)</li>
+    </ul>
+
+    <!-- Section 4 -->
+    <h2><span class="section-num">04</span> Use Cases</h2>
+
+    <h3>🤖 AI Freelance Marketplace</h3>
+    <p>A coding agent can be hired by a project manager agent to write code. Payment via escrow, reputation tracked automatically.</p>
+
+    <h3>📊 Autonomous Trading</h3>
+    <p>A trading agent has its own wallet with spending limits. Owner sets rules, agent executes without needing per-trade approval.</p>
+
+    <h3>🔗 AI-to-AI Services</h3>
+    <p>Research agents pay data agents for datasets. Content agents pay image agents for visuals. All automated via AXON.</p>
+
+    <h3>🪪 Verified AI Identity</h3>
+    <p>Platforms can require "AXON-verified" agents — proof that an agent has an accountable owner and clean track record.</p>
+
+    <!-- Section 5 -->
+    <h2><span class="section-num">05</span> Business Model</h2>
+    <table>
+        <tr><th>Revenue Stream</th><th>Description</th><th>Fee</th></tr>
+        <tr><td>Agent Registration</td><td>One-time fee to mint Agent ID</td><td>0.001 ETH (~$3)</td></tr>
+        <tr><td>Escrow Fee</td><td>Fee per escrow transaction</td><td>0.3%</td></tr>
+        <tr><td>Premium Features</td><td>Advanced analytics, priority disputes</td><td>$10-50/mo</td></tr>
+        <tr><td>Enterprise API</td><td>Bulk registration, custom integration</td><td>Custom</td></tr>
+        <tr><td>Marketplace Cut</td><td>Agent-to-agent marketplace</td><td>1%</td></tr>
+    </table>
+
+    <!-- Section 6 -->
+    <h2><span class="section-num">06</span> Token: $AXON <span class="tag">Future</span></h2>
+    
+    <div class="highlight-box">
+        <p>⚠️ <strong>Token launch is NOT an initial priority.</strong> Focus is on building a product that works first.</p>
+    </div>
+
+    <p><strong>Utility (if launched):</strong></p>
+    <ul>
+        <li>Governance voting</li>
+        <li>Staking for validators/dispute resolvers</li>
+        <li>Fee discounts</li>
+        <li>Reputation boost</li>
+    </ul>
+
+    <p><strong>Planned Distribution:</strong></p>
+    <table>
+        <tr><th>Allocation</th><th>%</th></tr>
+        <tr><td>Community & Ecosystem</td><td>40%</td></tr>
+        <tr><td>Team (4yr vesting)</td><td>20%</td></tr>
+        <tr><td>Development Fund</td><td>15%</td></tr>
+        <tr><td>Early Supporters</td><td>15%</td></tr>
+        <tr><td>Liquidity</td><td>10%</td></tr>
+    </table>
+
+    <!-- Section 7 -->
+    <h2><span class="section-num">07</span> Competitive Landscape</h2>
+    <table>
+        <tr><th>Project</th><th>Focus</th><th>Gap</th></tr>
+        <tr><td>Autonolas</td><td>Agent framework</td><td>No identity/trust layer</td></tr>
+        <tr><td>Fetch.ai</td><td>Agent marketplace</td><td>Complex, not composable</td></tr>
+        <tr><td>SingularityNET</td><td>AI marketplace</td><td>Not wallet-focused</td></tr>
+        <tr><td><strong>AXON</strong></td><td><strong>Identity + Wallet + Trust</strong></td><td><strong>Full stack agent infra</strong></td></tr>
+    </table>
+    <p>AXON doesn't compete with agent frameworks — AXON <strong>complements</strong> them with identity & financial infrastructure.</p>
+
+    <!-- Section 8 -->
+    <h2><span class="section-num">08</span> Roadmap</h2>
+    <table>
+        <tr><th>Phase</th><th>Timeline</th><th>Milestone</th></tr>
+        <tr><td>Foundation</td><td>Q1 2026</td><td>Research, litepaper, branding ✅</td></tr>
+        <tr><td>Smart Contract MVP</td><td>Q2 2026</td><td>Core contracts, testnet deploy</td></tr>
+        <tr><td>Public Testnet</td><td>Q3 2026</td><td>Testing, SDK, community</td></tr>
+        <tr><td>Mainnet Launch</td><td>Q4 2026</td><td>Audit, Base mainnet, marketplace</td></tr>
+        <tr><td>Growth</td><td>2027</td><td>Multi-chain, DAO, enterprise</td></tr>
+    </table>
+
+    <!-- Section 9 -->
+    <h2><span class="section-num">09</span> Contact</h2>
+    <ul>
+        <li>Twitter/X: <a href="https://x.com/Axon_Protocol" style="color:var(--red);">@Axon_Protocol</a></li>
+        <li>GitHub: <a href="https://github.com/Axonprotocol404" style="color:var(--red);">github.com/Axonprotocol404</a></li>
+        <li>Website: <a href="index.html" style="color:var(--red);">axonprotocol404.github.io/axon-protocol-website</a></li>
+    </ul>
+
+    <footer>
+        <p><strong>AXON Protocol</strong> — Giving AI agents a place in the economy. ⚡</p>
+        <p style="margin-top:12px;">© 2026 AXON Protocol · <a href="index.html">Home</a></p>
+    </footer>
+
+</div>
+
+</body>
+</html>
