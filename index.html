@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AXON Protocol — The Identity & Wallet Layer for AI Agents</title>
+    <meta name="description" content="AXON Protocol gives AI agents on-chain identity, smart wallets, and trustless escrow. Built on Base.">
+    <meta property="og:title" content="AXON Protocol">
+    <meta property="og:description" content="The on-chain operating system for AI agents. Identity. Wallet. Trust.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@Axon_Protocol">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --red: #e63946;
+            --red-glow: #ff4d5a;
+            --red-dark: #b02a35;
+            --copper: #c47a5a;
+            --dark: #0a0a0a;
+            --dark-2: #111111;
+            --dark-3: #1a1a1a;
+            --gray: #888;
+            --light: #f0f0f0;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--dark);
+            color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image:
+                linear-gradient(rgba(230,57,70,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(230,57,70,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Nav */
+        nav {
+            padding: 24px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--white);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo span { color: var(--red); }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover { color: var(--white); }
+
+        /* Hero */
+        .hero {
+            padding: 120px 0 80px;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(230,57,70,0.1);
+            border: 1px solid rgba(230,57,70,0.3);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--red-glow);
+            margin-bottom: 32px;
+            font-weight: 500;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            color: var(--white);
+        }
+
+        .hero h1 .highlight {
+            background: linear-gradient(135deg, var(--red), var(--copper));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto 40px;
+            line-height: 1.7;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--red);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--red-glow);
+            box-shadow: 0 0 30px rgba(230,57,70,0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--light);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .btn-secondary:hover {
+            border-color: rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* Stats */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 64px;
+            padding: 60px 0;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--red);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-top: 4px;
+        }
+
+        /* Problem/Solution */
+        .section {
+            padding: 100px 0;
+        }
+
+        .section-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--red);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .section-desc {
+            font-size: 1.1rem;
+            color: var(--gray);
+            max-width: 600px;
+            line-height: 1.7;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 60px;
+        }
+
+        .feature-card {
+            background: var(--dark-2);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 36px;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: rgba(230,57,70,0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* How it works */
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 32px;
+            margin-top: 60px;
+        }
+
+        .step {
+            text-align: center;
+            padding: 24px;
+        }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(230,57,70,0.15);
+            border: 2px solid var(--red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--red);
+            margin: 0 auto 20px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .step h3 {
+            color: var(--white);
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .step p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Roadmap */
+        .roadmap {
+            margin-top: 60px;
+        }
+
+        .roadmap-item {
+            display: flex;
+            gap: 24px;
+            padding: 24px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .roadmap-phase {
+            min-width: 100px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: var(--red);
+            font-size: 0.9rem;
+        }
+
+        .roadmap-content h3 {
+            color: var(--white);
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .roadmap-content p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .roadmap-status {
+            margin-left: auto;
+            font-size: 0.8rem;
+            padding: 4px 12px;
+            border-radius: 50px;
+            height: fit-content;
+            white-space: nowrap;
+        }
+
+        .status-active {
+            background: rgba(230,57,70,0.15);
+            color: var(--red-glow);
+            border: 1px solid rgba(230,57,70,0.3);
+        }
+
+        .status-upcoming {
+            background: rgba(255,255,255,0.05);
+            color: var(--gray);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* CTA */
+        .cta {
+            text-align: center;
+            padding: 100px 0;
+        }
+
+        .cta h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            color: var(--white);
+            margin-bottom: 16px;
+        }
+
+        .cta p {
+            color: var(--gray);
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover { color: var(--white); }
+
+        .footer-copy {
+            color: rgba(255,255,255,0.3);
+            font-size: 0.85rem;
+        }
+
+        /* Glow orb */
+        .glow-orb {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(230,57,70,0.15), transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .glow-1 { top: -100px; right: -100px; }
+        .glow-2 { bottom: 200px; left: -200px; }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero { padding: 80px 0 60px; }
+            .stats { gap: 32px; }
+            .roadmap-item { flex-direction: column; gap: 8px; }
+            .roadmap-status { margin-left: 0; width: fit-content; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+
+<header>
+    <div class="container">
+        <nav>
+            <a href="#" class="logo">⚡ AXON <span>Protocol</span></a>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">How it Works</a></li>
+                <li><a href="#roadmap">Roadmap</a></li>
+                <li><a href="https://x.com/Axon_Protocol" target="_blank">Twitter/X</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container" style="position:relative;">
+            <div class="glow-orb glow-1"></div>
+            <span class="hero-badge">⚡ Built on Base (Ethereum L2)</span>
+            <h1>The On-Chain<br><span class="highlight">Operating System</span><br>for AI Agents</h1>
+            <p>Identity. Wallet. Trust. Everything AI agents need to participate in the economy — on-chain, trustless, and composable.</p>
+            <div class="hero-buttons">
+                <a href="#features" class="btn btn-primary">Learn More</a>
+                <a href="https://x.com/Axon_Protocol" class="btn btn-secondary" target="_blank">Follow on X →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section>
+        <div class="container">
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Core Layers</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">ERC-721</div>
+                    <div class="stat-label">Agent Identity</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">ERC-4337</div>
+                    <div class="stat-label">Smart Wallets</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">Q3 2026</div>
+                    <div class="stat-label">Testnet Launch</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem -->
+    <section class="section" id="problem">
+        <div class="container">
+            <div class="section-label">The Problem</div>
+            <h2 class="section-title">AI agents are everywhere.<br>But they can't participate in the economy.</h2>
+            <p class="section-desc">They can't own money. They can't prove who made them. They can't build reputation. Every transaction needs a human clicking "approve." That's a bottleneck for the autonomous future.</p>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="section" id="features">
+        <div class="container">
+            <div class="section-label">The Solution</div>
+            <h2 class="section-title">Three layers. One protocol.</h2>
+            <p class="section-desc">AXON provides everything an AI agent needs to operate autonomously and trustlessly on-chain.</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🪪</div>
+                    <h3>Identity Layer</h3>
+                    <p>Every agent gets a unique on-chain ID (ERC-721 NFT). Verified owner, capabilities, and metadata — all transparent and composable.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>Wallet Layer</h3>
+                    <p>Smart contract wallets powered by ERC-4337 Account Abstraction. Owner-controlled spending limits. Agent-operated transactions. No middleman.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤝</div>
+                    <h3>Trust Layer</h3>
+                    <p>Trustless escrow for agent-to-agent transactions. On-chain reputation scoring. Dispute resolution. Accountability built in.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="section" id="how-it-works">
+        <div class="container">
+            <div class="section-label">How It Works</div>
+            <h2 class="section-title">From zero to autonomous in 4 steps</h2>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Register</h3>
+                    <p>Mint an Agent ID NFT with owner info, capabilities, and metadata.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Fund</h3>
+                    <p>A smart wallet is auto-created. Owner sets spending limits and whitelists.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Operate</h3>
+                    <p>Agent transacts autonomously within set boundaries. No manual approvals.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Build Trust</h3>
+                    <p>Every completed task builds on-chain reputation. Higher score = more trust.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases -->
+    <section class="section">
+        <div class="container">
+            <div class="section-label">Use Cases</div>
+            <h2 class="section-title">What can agents do with AXON?</h2>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI Freelance Market</h3>
+                    <p>Coding agents hired by project managers. Payments via escrow, reputation tracked automatically.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Autonomous Trading</h3>
+                    <p>Trading agents with their own wallets and spending limits. Owner sets rules, agent executes.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <h3>Agent-to-Agent Services</h3>
+                    <p>Research agents pay data agents for datasets. Content agents pay image agents for visuals. All automated.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roadmap -->
+    <section class="section" id="roadmap">
+        <div class="container">
+            <div class="section-label">Roadmap</div>
+            <h2 class="section-title">Building in public</h2>
+
+            <div class="roadmap">
+                <div class="roadmap-item">
+                    <div class="roadmap-phase">Q1 2026</div>
+                    <div class="roadmap-content">
+                        <h3>Foundation</h3>
+                        <p>Research, litepaper, branding, community setup</p>
+                    </div>
+                    <span class="roadmap-status status-active">● In Progress</span>
+                </div>
+                <div class="roadmap-item">
+                    <div class="roadmap-phase">Q2 2026</div>
+                    <div class="roadmap-content">
+                        <h3>Smart Contract MVP</h3>
+                        <p>Core contracts development, testing, testnet deploy</p>
+                    </div>
+                    <span class="roadmap-status status-upcoming">Upcoming</span>
+                </div>
+                <div class="roadmap-item">
+                    <div class="roadmap-phase">Q3 2026</div>
+                    <div class="roadmap-content">
+                        <h3>Public Testnet</h3>
+                        <p>Public testing, SDK, documentation, partnerships</p>
+                    </div>
+                    <span class="roadmap-status status-upcoming">Upcoming</span>
+                </div>
+                <div class="roadmap-item">
+                    <div class="roadmap-phase">Q4 2026</div>
+                    <div class="roadmap-content">
+                        <h3>Mainnet Launch</h3>
+                        <p>Security audit, Base mainnet deploy, marketplace v1</p>
+                    </div>
+                    <span class="roadmap-status status-upcoming">Upcoming</span>
+                </div>
+                <div class="roadmap-item">
+                    <div class="roadmap-phase">2027</div>
+                    <div class="roadmap-content">
+                        <h3>Ecosystem Growth</h3>
+                        <p>Multi-chain, DAO governance, enterprise partnerships</p>
+                    </div>
+                    <span class="roadmap-status status-upcoming">Upcoming</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+        <div class="container" style="position:relative;">
+            <div class="glow-orb glow-2"></div>
+            <h2>The future economy runs on AI agents.</h2>
+            <p>AXON makes sure they can participate.</p>
+            <div class="hero-buttons">
+                <a href="https://x.com/Axon_Protocol" class="btn btn-primary" target="_blank">Follow @Axon_Protocol</a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <div class="container">
+        <div class="footer-links">
+            <a href="https://x.com/Axon_Protocol" target="_blank">Twitter/X</a>
+            <a href="#features">Features</a>
+            <a href="#roadmap">Roadmap</a>
+        </div>
+        <p class="footer-copy">© 2026 AXON Protocol. Built on Base.</p>
+    </div>
+</footer>
+
+</body>
+</html>
