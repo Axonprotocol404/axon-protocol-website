@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AXON Protocol — Airdrop Program</title>
+    <meta name="description" content="Earn $AXON tokens by completing tasks, quizzes, and testing the protocol.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --red: #e63946; --red-glow: #ff4d5a; --copper: #c47a5a;
+            --dark: #0a0a0a; --dark-2: #111111; --dark-3: #1a1a1a;
+            --gray: #999; --light: #e0e0e0; --white: #ffffff;
+            --green: #2ecc71; --yellow: #f1c40f; --blue: #3498db;
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--dark); color: var(--light); line-height: 1.7; }
+        .bg-grid {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-image: linear-gradient(rgba(230,57,70,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(230,57,70,0.03) 1px, transparent 1px);
+            background-size: 60px 60px; z-index: 0; pointer-events: none;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; background: rgba(10,10,10,0.9);
+            backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 16px 24px; z-index: 100; display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo { font-size: 1.2rem; font-weight: 800; color: var(--white); text-decoration: none; }
+        .logo span { color: var(--red); }
+        .nav-link { color: var(--gray); text-decoration: none; font-size: 0.9rem; }
+        .nav-link:hover { color: var(--white); }
+
+        .hero { padding: 120px 0 60px; text-align: center; }
+        .hero-badge {
+            display: inline-block; padding: 6px 16px; background: rgba(230,57,70,0.1);
+            border: 1px solid rgba(230,57,70,0.3); border-radius: 50px;
+            font-size: 0.85rem; color: var(--red-glow); margin-bottom: 24px;
+        }
+        .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; color: var(--white); margin-bottom: 16px; }
+        .hero h1 .hl { background: linear-gradient(135deg, var(--red), var(--copper)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { font-size: 1.1rem; color: var(--gray); max-width: 600px; margin: 0 auto; }
+
+        .section { padding: 60px 0; }
+        .section-title { font-size: 1.8rem; font-weight: 700; color: var(--white); margin-bottom: 12px; }
+        .section-sub { color: var(--gray); font-size: 1rem; margin-bottom: 40px; }
+
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+        .card {
+            background: var(--dark-2); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px; padding: 32px; transition: all 0.3s;
+        }
+        .card:hover { border-color: rgba(230,57,70,0.3); transform: translateY(-3px); }
+        .card-icon { font-size: 2rem; margin-bottom: 16px; }
+        .card h3 { font-size: 1.2rem; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+        .card p { color: var(--gray); font-size: 0.9rem; }
+        .card-points { margin-top: 16px; font-family: 'JetBrains Mono', monospace; color: var(--red-glow); font-weight: 600; font-size: 0.9rem; }
+
+        .points-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .points-table th { background: var(--dark-2); color: var(--white); padding: 14px 20px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(230,57,70,0.3); }
+        .points-table td { padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .points-table tr:hover { background: rgba(255,255,255,0.02); }
+        .points-val { font-family: 'JetBrains Mono', monospace; color: var(--red-glow); font-weight: 600; }
+
+        .quiz-section { background: var(--dark-2); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 40px; margin: 40px 0; }
+        .quiz-q { margin-bottom: 32px; }
+        .quiz-q h4 { color: var(--white); font-size: 1rem; margin-bottom: 12px; }
+        .quiz-q label { display: block; padding: 10px 16px; margin: 4px 0; border-radius: 8px; cursor: pointer; color: var(--light); font-size: 0.9rem; transition: all 0.2s; border: 1px solid transparent; }
+        .quiz-q label:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
+        .quiz-q input[type="radio"] { margin-right: 10px; accent-color: var(--red); }
+        .quiz-btn {
+            padding: 14px 32px; background: var(--red); color: var(--white); border: none;
+            border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; font-family: inherit;
+        }
+        .quiz-btn:hover { background: var(--red-glow); box-shadow: 0 0 30px rgba(230,57,70,0.4); }
+        .quiz-result { margin-top: 20px; padding: 16px; border-radius: 8px; font-weight: 600; display: none; }
+        .quiz-result.show { display: block; }
+        .quiz-result.good { background: rgba(46,204,113,0.15); border: 1px solid rgba(46,204,113,0.3); color: var(--green); }
+        .quiz-result.bad { background: rgba(230,57,70,0.15); border: 1px solid rgba(230,57,70,0.3); color: var(--red-glow); }
+
+        .timeline { position: relative; padding-left: 32px; }
+        .timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: rgba(230,57,70,0.3); }
+        .timeline-item { margin-bottom: 32px; position: relative; }
+        .timeline-dot { position: absolute; left: -28px; top: 4px; width: 14px; height: 14px; border-radius: 50%; background: var(--red); border: 2px solid var(--dark); }
+        .timeline-item h3 { color: var(--white); font-size: 1.1rem; margin-bottom: 4px; }
+        .timeline-item p { color: var(--gray); font-size: 0.9rem; }
+        .timeline-tag { display: inline-block; padding: 2px 10px; border-radius: 50px; font-size: 0.75rem; font-weight: 600; margin-left: 8px; }
+        .tag-live { background: rgba(46,204,113,0.15); color: var(--green); border: 1px solid rgba(46,204,113,0.3); }
+        .tag-soon { background: rgba(241,196,15,0.15); color: var(--yellow); border: 1px solid rgba(241,196,15,0.3); }
+        .tag-later { background: rgba(255,255,255,0.05); color: var(--gray); border: 1px solid rgba(255,255,255,0.1); }
+
+        .cta { text-align: center; padding: 80px 0; }
+        .cta h2 { font-size: 2rem; font-weight: 800; color: var(--white); margin-bottom: 12px; }
+        .cta p { color: var(--gray); margin-bottom: 32px; }
+        .cta-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+        .btn { padding: 14px 32px; border-radius: 8px; font-size: 1rem; font-weight: 600; text-decoration: none; border: none; font-family: inherit; cursor: pointer; }
+        .btn-red { background: var(--red); color: var(--white); }
+        .btn-red:hover { background: var(--red-glow); }
+        .btn-outline { background: transparent; color: var(--light); border: 1px solid rgba(255,255,255,0.2); }
+        .btn-outline:hover { border-color: rgba(255,255,255,0.5); }
+
+        footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 40px 0; text-align: center; color: var(--gray); font-size: 0.85rem; }
+        footer a { color: var(--red); text-decoration: none; }
+
+        @media (max-width: 768px) { .hero { padding: 100px 0 40px; } .quiz-section { padding: 24px; } }
+    </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+
+<nav>
+    <a href="index.html" class="logo">⚡ AXON <span>Protocol</span></a>
+    <a href="index.html" class="nav-link">← Back to Home</a>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="container">
+        <span class="hero-badge">🪂 Early Supporter Program</span>
+        <h1>Earn <span class="hl">$AXON</span> Tokens</h1>
+        <p>Complete tasks, test the protocol, and prove your knowledge. Early supporters get rewarded when $AXON launches.</p>
+    </div>
+</section>
+
+<!-- How it works -->
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-sub">Earn points by completing tasks. Points convert to $AXON tokens at TGE.</p>
+
+        <div class="cards">
+            <div class="card">
+                <div class="card-icon">📝</div>
+                <h3>Learn & Quiz</h3>
+                <p>Take quizzes about AXON Protocol and AI agents. Test your knowledge, earn points.</p>
+                <div class="card-points">Up to 200 pts</div>
+            </div>
+            <div class="card">
+                <div class="card-icon">🧪</div>
+                <h3>Testnet Tasks</h3>
+                <p>Register agents, create escrows, and test the protocol on Base Sepolia testnet.</p>
+                <div class="card-points">Up to 500 pts</div>
+            </div>
+            <div class="card">
+                <div class="card-icon">🐦</div>
+                <h3>Social Tasks</h3>
+                <p>Follow, retweet, create content, and spread the word about AXON.</p>
+                <div class="card-points">Up to 150 pts</div>
+            </div>
+            <div class="card">
+                <div class="card-icon">🐛</div>
+                <h3>Bug Bounty</h3>
+                <p>Find bugs in our smart contracts or website. Critical bugs = massive rewards.</p>
+                <div class="card-points">Up to 1000 pts</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Points Table -->
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Points Breakdown</h2>
+        <p class="section-sub">Every action earns points. More points = more $AXON at TGE.</p>
+
+        <table class="points-table">
+            <thead>
+                <tr><th>Task</th><th>Category</th><th>Points</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Follow @Axon_Protocol on X</td><td>Social</td><td class="points-val">+10</td></tr>
+                <tr><td>Retweet announcement</td><td>Social</td><td class="points-val">+20</td></tr>
+                <tr><td>Quote tweet about AXON</td><td>Social</td><td class="points-val">+30</td></tr>
+                <tr><td>Join Discord</td><td>Social</td><td class="points-val">+10</td></tr>
+                <tr><td>Join Telegram</td><td>Social</td><td class="points-val">+10</td></tr>
+                <tr><td>Create content/thread about AXON</td><td>Social</td><td class="points-val">+100</td></tr>
+                <tr><td>Complete quiz (per correct answer)</td><td>Learn</td><td class="points-val">+10</td></tr>
+                <tr><td>Score 100% on quiz</td><td>Learn</td><td class="points-val">+50 bonus</td></tr>
+                <tr><td>Register AI agent (testnet)</td><td>Testnet</td><td class="points-val">+100</td></tr>
+                <tr><td>Create escrow (testnet)</td><td>Testnet</td><td class="points-val">+100</td></tr>
+                <tr><td>Complete escrow (testnet)</td><td>Testnet</td><td class="points-val">+200</td></tr>
+                <tr><td>Deploy agent wallet (testnet)</td><td>Testnet</td><td class="points-val">+100</td></tr>
+                <tr><td>Refer a friend</td><td>Referral</td><td class="points-val">+50</td></tr>
+                <tr><td>Bug report (minor)</td><td>Bug Bounty</td><td class="points-val">+200</td></tr>
+                <tr><td>Bug report (critical)</td><td>Bug Bounty</td><td class="points-val">+1000</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- Quiz -->
+<section class="section" id="quiz">
+    <div class="container">
+        <h2 class="section-title">🧠 AXON Knowledge Quiz</h2>
+        <p class="section-sub">Test your knowledge about AXON Protocol. 10 points per correct answer + 50 bonus for perfect score!</p>
+
+        <div class="quiz-section" id="quizContainer">
+            <div class="quiz-q" data-correct="c">
+                <h4>1. What does AXON Protocol provide for AI agents?</h4>
+                <label><input type="radio" name="q1" value="a"> A token trading platform</label>
+                <label><input type="radio" name="q1" value="b"> A decentralized exchange</label>
+                <label><input type="radio" name="q1" value="c"> On-chain identity, wallet, and trust layer</label>
+                <label><input type="radio" name="q1" value="d"> An AI chatbot framework</label>
+            </div>
+
+            <div class="quiz-q" data-correct="b">
+                <h4>2. What token standard is used for Agent IDs?</h4>
+                <label><input type="radio" name="q2" value="a"> ERC-20</label>
+                <label><input type="radio" name="q2" value="b"> ERC-721 (NFT)</label>
+                <label><input type="radio" name="q2" value="c"> ERC-1155</label>
+                <label><input type="radio" name="q2" value="d"> ERC-777</label>
+            </div>
+
+            <div class="quiz-q" data-correct="d">
+                <h4>3. What standard powers AXON's smart wallets?</h4>
+                <label><input type="radio" name="q3" value="a"> ERC-20</label>
+                <label><input type="radio" name="q3" value="b"> ERC-721</label>
+                <label><input type="radio" name="q3" value="c"> ERC-2981</label>
+                <label><input type="radio" name="q3" value="d"> ERC-4337 (Account Abstraction)</label>
+            </div>
+
+            <div class="quiz-q" data-correct="a">
+                <h4>4. Which blockchain is AXON built on?</h4>
+                <label><input type="radio" name="q4" value="a"> Base (Ethereum L2)</label>
+                <label><input type="radio" name="q4" value="b"> Solana</label>
+                <label><input type="radio" name="q4" value="c"> Polygon</label>
+                <label><input type="radio" name="q4" value="d"> Avalanche</label>
+            </div>
+
+            <div class="quiz-q" data-correct="c">
+                <h4>5. What is the escrow fee in AXON Protocol?</h4>
+                <label><input type="radio" name="q5" value="a"> 0.1%</label>
+                <label><input type="radio" name="q5" value="b"> 1%</label>
+                <label><input type="radio" name="q5" value="c"> 0.3%</label>
+                <label><input type="radio" name="q5" value="d"> 5%</label>
+            </div>
+
+            <div class="quiz-q" data-correct="b">
+                <h4>6. What can an Agent Wallet owner do in an emergency?</h4>
+                <label><input type="radio" name="q6" value="a"> Delete the agent</label>
+                <label><input type="radio" name="q6" value="b"> Freeze the wallet</label>
+                <label><input type="radio" name="q6" value="c"> Burn the NFT</label>
+                <label><input type="radio" name="q6" value="d"> Nothing</label>
+            </div>
+
+            <div class="quiz-q" data-correct="d">
+                <h4>7. How does AXON's reputation system work?</h4>
+                <label><input type="radio" name="q7" value="a"> Users vote on agents manually</label>
+                <label><input type="radio" name="q7" value="b"> Reputation is bought with tokens</label>
+                <label><input type="radio" name="q7" value="c"> It's based on social media followers</label>
+                <label><input type="radio" name="q7" value="d"> Based on on-chain activity (tasks, disputes, response time)</label>
+            </div>
+
+            <div class="quiz-q" data-correct="a">
+                <h4>8. What is the Agent Registration fee?</h4>
+                <label><input type="radio" name="q8" value="a"> 0.001 ETH (~$3)</label>
+                <label><input type="radio" name="q8" value="b"> 0.1 ETH (~$300)</label>
+                <label><input type="radio" name="q8" value="c"> Free</label>
+                <label><input type="radio" name="q8" value="d"> 1 ETH</label>
+            </div>
+
+            <div class="quiz-q" data-correct="c">
+                <h4>9. When is AXON's planned mainnet launch?</h4>
+                <label><input type="radio" name="q9" value="a"> Q1 2026</label>
+                <label><input type="radio" name="q9" value="b"> Q2 2026</label>
+                <label><input type="radio" name="q9" value="c"> Q4 2026</label>
+                <label><input type="radio" name="q9" value="d"> 2028</label>
+            </div>
+
+            <div class="quiz-q" data-correct="b">
+                <h4>10. What does AXON do with agent frameworks like AutoGPT or CrewAI?</h4>
+                <label><input type="radio" name="q10" value="a"> Competes with them</label>
+                <label><input type="radio" name="q10" value="b"> Complements them with identity & financial infra</label>
+                <label><input type="radio" name="q10" value="c"> Replaces them entirely</label>
+                <label><input type="radio" name="q10" value="d"> Has no relationship with them</label>
+            </div>
+
+            <button class="quiz-btn" onclick="checkQuiz()">Submit Answers ⚡</button>
+            <div class="quiz-result" id="quizResult"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Timeline -->
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Airdrop Timeline</h2>
+        <p class="section-sub">The program rolls out in phases.</p>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <h3>Phase 1: Social + Quiz <span class="timeline-tag tag-live">LIVE</span></h3>
+                <p>Follow, engage, and complete the knowledge quiz. Earn your first points now.</p>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <h3>Phase 2: Testnet Tasks <span class="timeline-tag tag-soon">Q3 2026</span></h3>
+                <p>Test the protocol on Base Sepolia. Register agents, create escrows, deploy wallets.</p>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <h3>Phase 3: Bug Bounty <span class="timeline-tag tag-soon">Q3 2026</span></h3>
+                <p>Find bugs and vulnerabilities. Critical findings earn massive rewards.</p>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <h3>Phase 4: Snapshot & Distribution <span class="timeline-tag tag-later">Pre-Mainnet</span></h3>
+                <p>Points snapshot taken. $AXON tokens distributed proportionally at TGE.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Token Info -->
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Airdrop Allocation</h2>
+        <div class="cards" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+            <div class="card" style="text-align:center;">
+                <div style="font-size:2.5rem; font-weight:800; color:var(--red); font-family:'JetBrains Mono',monospace;">10%</div>
+                <p style="margin-top:8px;">of total $AXON supply</p>
+            </div>
+            <div class="card" style="text-align:center;">
+                <div style="font-size:2.5rem; font-weight:800; color:var(--white); font-family:'JetBrains Mono',monospace;">100M</div>
+                <p style="margin-top:8px;">tokens for community</p>
+            </div>
+            <div class="card" style="text-align:center;">
+                <div style="font-size:2.5rem; font-weight:800; color:var(--green); font-family:'JetBrains Mono',monospace;">∞</div>
+                <p style="margin-top:8px;">no cap on participants</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+    <div class="container">
+        <h2>Start earning $AXON today.</h2>
+        <p>The earlier you join, the more you earn.</p>
+        <div class="cta-buttons">
+            <a href="#quiz" class="btn btn-red">Take the Quiz ⚡</a>
+            <a href="https://x.com/Axon_Protocol" class="btn btn-outline" target="_blank">Follow on X →</a>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <p><strong>AXON Protocol</strong> — Giving AI agents a place in the economy. ⚡</p>
+        <p style="margin-top:12px;">© 2026 AXON Protocol · <a href="index.html">Home</a> · <a href="litepaper.html">Litepaper</a></p>
+    </div>
+</footer>
+
+<script>
+function checkQuiz() {
+    const questions = document.querySelectorAll('.quiz-q');
+    let correct = 0;
+    let total = questions.length;
+    let unanswered = 0;
+
+    questions.forEach((q, i) => {
+        const correctAnswer = q.dataset.correct;
+        const selected = q.querySelector(`input[name="q${i+1}"]:checked`);
+        
+        if (!selected) { unanswered++; return; }
+        if (selected.value === correctAnswer) correct++;
+    });
+
+    const result = document.getElementById('quizResult');
+    result.classList.add('show');
+
+    if (unanswered > 0) {
+        result.className = 'quiz-result show bad';
+        result.innerHTML = `⚠️ Please answer all questions! You skipped ${unanswered}.`;
+        return;
+    }
+
+    const points = correct * 10;
+    const bonus = correct === total ? 50 : 0;
+    const totalPoints = points + bonus;
+
+    if (correct === total) {
+        result.className = 'quiz-result show good';
+        result.innerHTML = `🎉 Perfect score! ${correct}/${total} correct — ${totalPoints} points earned (${points} + ${bonus} bonus)!<br>Screenshot this and share on X with @Axon_Protocol to claim your points!`;
+    } else if (correct >= 7) {
+        result.className = 'quiz-result show good';
+        result.innerHTML = `✅ Great job! ${correct}/${total} correct — ${totalPoints} points earned!<br>Screenshot and share on X with @Axon_Protocol to claim.`;
+    } else {
+        result.className = 'quiz-result show bad';
+        result.innerHTML = `${correct}/${total} correct — ${totalPoints} points. Read the <a href="litepaper.html" style="color:var(--red-glow)">Litepaper</a> and try again!`;
+    }
+}
+</script>
+
+</body>
+</html>
