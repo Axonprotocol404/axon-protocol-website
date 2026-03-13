@@ -4,661 +4,549 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AXON Protocol — The Identity & Wallet Layer for AI Agents</title>
-    <meta name="description" content="AXON Protocol gives AI agents on-chain identity, smart wallets, and trustless escrow. Built on Base.">
-    <meta property="og:title" content="AXON Protocol">
-    <meta property="og:description" content="The on-chain operating system for AI agents. Identity. Wallet. Trust.">
-    <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@Axon_Protocol">
+    <meta name="description" content="On-chain identity, smart wallets, and trustless escrow for AI agents. Built on Base.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         :root {
-            --red: #e63946;
-            --red-glow: #ff4d5a;
-            --red-dark: #b02a35;
-            --copper: #c47a5a;
-            --dark: #0a0a0a;
-            --dark-2: #111111;
-            --dark-3: #1a1a1a;
-            --gray: #888;
-            --light: #f0f0f0;
-            --white: #ffffff;
+            --red: #e63946; --red-glow: #ff4d5a; --copper: #c47a5a;
+            --dark: #08080a; --dark-2: #0f0f13; --dark-3: #16161d;
+            --gray: #8a8a9a; --light: #d4d4e0; --white: #f0f0f5;
+            --gradient-1: linear-gradient(135deg, #e63946 0%, #c47a5a 50%, #e63946 100%);
+            --gradient-2: linear-gradient(135deg, #1a0a0e 0%, #0a0a12 50%, #120a08 100%);
+            --gradient-hero: radial-gradient(ellipse at 50% 0%, rgba(230,57,70,0.15) 0%, rgba(196,122,90,0.05) 40%, transparent 70%);
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; background: var(--dark); color: var(--light); line-height: 1.7; overflow-x: hidden; }
+
+        /* Animated gradient bg */
+        .hero-glow {
+            position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+            width: 1200px; height: 800px;
+            background: radial-gradient(ellipse, rgba(230,57,70,0.12) 0%, rgba(196,122,90,0.06) 30%, transparent 65%);
+            pointer-events: none; z-index: 0;
+            animation: pulseGlow 8s ease-in-out infinite;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
         }
 
-        body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--dark);
-            color: var(--light);
-            line-height: 1.6;
-            overflow-x: hidden;
+        /* Floating particles */
+        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+        .particle {
+            position: absolute; border-radius: 50%; background: rgba(230,57,70,0.3);
+            animation: float linear infinite;
         }
-
-        /* Animated background */
-        .bg-grid {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image:
-                linear-gradient(rgba(230,57,70,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(230,57,70,0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 0 24px;
-            position: relative;
-            z-index: 1;
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
         }
 
         /* Nav */
         nav {
-            padding: 24px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            position: fixed; top: 0; left: 0; right: 0;
+            background: rgba(8,8,10,0.8); backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            padding: 0 40px; height: 72px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100; transition: all 0.3s;
         }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--white);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .logo span { color: var(--red); }
-
-        .nav-links {
-            display: flex;
-            gap: 32px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            color: var(--gray);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
+        .logo { font-size: 1.3rem; font-weight: 900; color: var(--white); text-decoration: none; letter-spacing: -0.02em; }
+        .logo span { background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-links { display: flex; gap: 32px; align-items: center; }
+        .nav-links a { color: var(--gray); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
         .nav-links a:hover { color: var(--white); }
+        .nav-btn {
+            padding: 10px 24px; background: rgba(230,57,70,0.1); border: 1px solid rgba(230,57,70,0.3);
+            border-radius: 50px; color: var(--red-glow); font-weight: 600; font-size: 0.85rem;
+            text-decoration: none; transition: all 0.3s;
+        }
+        .nav-btn:hover { background: var(--red); color: white; border-color: var(--red); }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
 
         /* Hero */
-        .hero {
-            padding: 120px 0 80px;
-            text-align: center;
+        .hero { position: relative; padding: 180px 0 120px; text-align: center; overflow: hidden; }
+        .hero-tag {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 20px; background: rgba(230,57,70,0.08);
+            border: 1px solid rgba(230,57,70,0.2); border-radius: 50px;
+            font-size: 0.85rem; color: var(--red-glow); font-weight: 500;
+            margin-bottom: 32px; animation: fadeUp 0.8s ease;
         }
-
-        .hero-badge {
-            display: inline-block;
-            padding: 6px 16px;
-            background: rgba(230,57,70,0.1);
-            border: 1px solid rgba(230,57,70,0.3);
-            border-radius: 50px;
-            font-size: 0.85rem;
-            color: var(--red-glow);
-            margin-bottom: 32px;
-            font-weight: 500;
-        }
-
+        .hero-tag::before { content: '⚡'; }
         .hero h1 {
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 24px;
-            color: var(--white);
+            font-size: clamp(3rem, 7vw, 5.5rem); font-weight: 900;
+            line-height: 1.05; letter-spacing: -0.03em;
+            color: var(--white); margin-bottom: 24px;
+            animation: fadeUp 0.8s ease 0.1s both;
         }
-
-        .hero h1 .highlight {
-            background: linear-gradient(135deg, var(--red), var(--copper));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .hero h1 .gradient {
+            background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-size: 200% auto; animation: shimmer 3s linear infinite;
         }
-
+        @keyframes shimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
         .hero p {
-            font-size: 1.2rem;
-            color: var(--gray);
-            max-width: 600px;
-            margin: 0 auto 40px;
-            line-height: 1.7;
+            font-size: clamp(1.1rem, 2vw, 1.35rem); color: var(--gray);
+            max-width: 640px; margin: 0 auto 48px; line-height: 1.7;
+            animation: fadeUp 0.8s ease 0.2s both;
         }
-
-        .hero-buttons {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
+        .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; animation: fadeUp 0.8s ease 0.3s both; }
         .btn {
-            padding: 14px 32px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s;
-            cursor: pointer;
-            border: none;
-            font-family: inherit;
+            padding: 16px 36px; border-radius: 50px; font-size: 1rem; font-weight: 600;
+            text-decoration: none; border: none; font-family: inherit; cursor: pointer;
+            transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px;
         }
-
         .btn-primary {
-            background: var(--red);
-            color: var(--white);
+            background: var(--red); color: white;
+            box-shadow: 0 0 40px rgba(230,57,70,0.3);
+        }
+        .btn-primary:hover { background: var(--red-glow); box-shadow: 0 0 60px rgba(230,57,70,0.5); transform: translateY(-2px); }
+        .btn-ghost { background: rgba(255,255,255,0.05); color: var(--white); border: 1px solid rgba(255,255,255,0.1); }
+        .btn-ghost:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .btn-primary:hover {
-            background: var(--red-glow);
-            box-shadow: 0 0 30px rgba(230,57,70,0.4);
+        /* Stats bar */
+        .stats-bar {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+            background: rgba(255,255,255,0.04); border-radius: 20px;
+            overflow: hidden; margin: 80px auto 0; max-width: 900px;
+            border: 1px solid rgba(255,255,255,0.06);
         }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--light);
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .btn-secondary:hover {
-            border-color: rgba(255,255,255,0.5);
-            background: rgba(255,255,255,0.05);
-        }
-
-        /* Stats */
-        .stats {
-            display: flex;
-            justify-content: center;
-            gap: 64px;
-            padding: 60px 0;
-            border-top: 1px solid rgba(255,255,255,0.06);
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            flex-wrap: wrap;
-        }
-
         .stat {
-            text-align: center;
+            padding: 36px 24px; text-align: center;
+            background: rgba(8,8,10,0.8); backdrop-filter: blur(10px);
         }
-
         .stat-value {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--red);
-            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(1.8rem, 3vw, 2.5rem); font-weight: 800; color: var(--white);
+            font-family: 'JetBrains Mono', monospace; letter-spacing: -0.02em;
         }
+        .stat-label { font-size: 0.8rem; color: var(--gray); margin-top: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
 
-        .stat-label {
-            font-size: 0.85rem;
-            color: var(--gray);
-            margin-top: 4px;
-        }
-
-        /* Problem/Solution */
-        .section {
-            padding: 100px 0;
-        }
-
+        /* Sections */
+        .section { padding: 120px 0; position: relative; }
         .section-label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--red);
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 0.8rem; font-weight: 600; color: var(--red-glow);
+            text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;
+        }
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800;
+            color: var(--white); line-height: 1.15; letter-spacing: -0.02em;
             margin-bottom: 16px;
         }
+        .section-desc { font-size: 1.1rem; color: var(--gray); max-width: 560px; margin-bottom: 56px; }
 
-        .section-title {
-            font-size: clamp(1.8rem, 4vw, 2.8rem);
-            font-weight: 700;
-            color: var(--white);
-            margin-bottom: 20px;
-            line-height: 1.2;
-        }
-
-        .section-desc {
-            font-size: 1.1rem;
-            color: var(--gray);
-            max-width: 600px;
-            line-height: 1.7;
-        }
-
-        /* Features Grid */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-            margin-top: 60px;
-        }
-
+        /* Feature cards */
+        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         .feature-card {
-            background: var(--dark-2);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 16px;
-            padding: 36px;
-            transition: all 0.3s;
+            background: var(--dark-2); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 20px; padding: 40px 32px; position: relative;
+            overflow: hidden; transition: all 0.4s;
         }
-
-        .feature-card:hover {
-            border-color: rgba(230,57,70,0.3);
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        .feature-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: var(--gradient-1); opacity: 0; transition: opacity 0.4s;
         }
-
+        .feature-card:hover { border-color: rgba(230,57,70,0.2); transform: translateY(-4px); }
+        .feature-card:hover::before { opacity: 1; }
         .feature-icon {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
+            width: 56px; height: 56px; border-radius: 16px;
+            background: rgba(230,57,70,0.08); border: 1px solid rgba(230,57,70,0.15);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; margin-bottom: 24px;
         }
+        .feature-card h3 { font-size: 1.25rem; font-weight: 700; color: var(--white); margin-bottom: 10px; }
+        .feature-card p { color: var(--gray); font-size: 0.92rem; line-height: 1.7; }
 
-        .feature-card h3 {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--white);
-            margin-bottom: 12px;
+        /* Big feature sections */
+        .big-feature { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; padding: 100px 0; }
+        .big-feature.reverse { direction: rtl; }
+        .big-feature.reverse > * { direction: ltr; }
+        .big-feature-visual {
+            background: var(--dark-2); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 24px; padding: 48px; position: relative; overflow: hidden;
+            min-height: 400px; display: flex; align-items: center; justify-content: center;
         }
-
-        .feature-card p {
-            color: var(--gray);
-            font-size: 0.95rem;
-            line-height: 1.7;
+        .code-block {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+            color: var(--light); line-height: 2; width: 100%;
         }
+        .code-block .keyword { color: var(--red-glow); }
+        .code-block .func { color: var(--copper); }
+        .code-block .string { color: #98c379; }
+        .code-block .comment { color: #5c6370; }
 
         /* How it works */
-        .steps {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 32px;
-            margin-top: 60px;
-        }
-
+        .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 56px; }
         .step {
-            text-align: center;
-            padding: 24px;
+            text-align: center; padding: 40px 24px;
+            background: var(--dark-2); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 20px; position: relative; transition: all 0.3s;
         }
-
+        .step:hover { border-color: rgba(230,57,70,0.2); }
         .step-number {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: rgba(230,57,70,0.15);
-            border: 2px solid var(--red);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            color: var(--red);
-            margin: 0 auto 20px;
-            font-family: 'JetBrains Mono', monospace;
+            width: 48px; height: 48px; border-radius: 50%;
+            background: rgba(230,57,70,0.1); border: 1px solid rgba(230,57,70,0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'JetBrains Mono', monospace; font-weight: 700;
+            color: var(--red-glow); font-size: 1.1rem; margin: 0 auto 20px;
         }
+        .step h3 { font-size: 1.15rem; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+        .step p { color: var(--gray); font-size: 0.9rem; }
 
-        .step h3 {
-            color: var(--white);
-            font-size: 1.1rem;
-            margin-bottom: 8px;
+        /* Ecosystem */
+        .eco-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .eco-card {
+            background: var(--dark-2); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 20px; padding: 36px; transition: all 0.3s;
         }
-
-        .step p {
-            color: var(--gray);
-            font-size: 0.9rem;
+        .eco-card:hover { border-color: rgba(230,57,70,0.2); }
+        .eco-card h3 { font-size: 1.1rem; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+        .eco-card p { color: var(--gray); font-size: 0.9rem; }
+        .eco-tag {
+            display: inline-block; padding: 4px 12px; border-radius: 50px;
+            font-size: 0.7rem; font-weight: 600; margin-bottom: 16px;
         }
-
-        /* Roadmap */
-        .roadmap {
-            margin-top: 60px;
-        }
-
-        .roadmap-item {
-            display: flex;
-            gap: 24px;
-            padding: 24px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-
-        .roadmap-phase {
-            min-width: 100px;
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 600;
-            color: var(--red);
-            font-size: 0.9rem;
-        }
-
-        .roadmap-content h3 {
-            color: var(--white);
-            font-size: 1.1rem;
-            margin-bottom: 8px;
-        }
-
-        .roadmap-content p {
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-
-        .roadmap-status {
-            margin-left: auto;
-            font-size: 0.8rem;
-            padding: 4px 12px;
-            border-radius: 50px;
-            height: fit-content;
-            white-space: nowrap;
-        }
-
-        .status-active {
-            background: rgba(230,57,70,0.15);
-            color: var(--red-glow);
-            border: 1px solid rgba(230,57,70,0.3);
-        }
-
-        .status-upcoming {
-            background: rgba(255,255,255,0.05);
-            color: var(--gray);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
+        .tag-live { background: rgba(46,204,113,0.12); color: #2ecc71; border: 1px solid rgba(46,204,113,0.25); }
+        .tag-soon { background: rgba(241,196,15,0.12); color: #f1c40f; border: 1px solid rgba(241,196,15,0.25); }
+        .tag-future { background: rgba(255,255,255,0.05); color: var(--gray); border: 1px solid rgba(255,255,255,0.1); }
 
         /* CTA */
-        .cta {
-            text-align: center;
-            padding: 100px 0;
+        .cta-section {
+            text-align: center; padding: 140px 0; position: relative;
         }
-
-        .cta h2 {
-            font-size: clamp(2rem, 4vw, 3rem);
-            font-weight: 800;
-            color: var(--white);
-            margin-bottom: 16px;
+        .cta-section::before {
+            content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 800px; height: 400px;
+            background: radial-gradient(ellipse, rgba(230,57,70,0.1) 0%, transparent 60%);
+            pointer-events: none;
         }
-
-        .cta p {
-            color: var(--gray);
-            font-size: 1.1rem;
-            margin-bottom: 40px;
+        .cta-section h2 {
+            font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900;
+            color: var(--white); margin-bottom: 16px; letter-spacing: -0.03em;
         }
+        .cta-section p { color: var(--gray); font-size: 1.1rem; margin-bottom: 40px; }
 
         /* Footer */
         footer {
             border-top: 1px solid rgba(255,255,255,0.06);
-            padding: 40px 0;
-            text-align: center;
+            padding: 60px 0 40px;
         }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+        .footer-brand { }
+        .footer-brand p { color: var(--gray); font-size: 0.9rem; margin-top: 12px; max-width: 300px; }
+        .footer-col h4 { color: var(--white); font-size: 0.85rem; font-weight: 700; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .footer-col a { display: block; color: var(--gray); text-decoration: none; font-size: 0.9rem; margin-bottom: 10px; transition: color 0.2s; }
+        .footer-col a:hover { color: var(--white); }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; color: var(--gray); font-size: 0.8rem; }
 
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 32px;
-            margin-bottom: 24px;
-            flex-wrap: wrap;
-        }
-
-        .footer-links a {
-            color: var(--gray);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s;
-        }
-
-        .footer-links a:hover { color: var(--white); }
-
-        .footer-copy {
-            color: rgba(255,255,255,0.3);
-            font-size: 0.85rem;
-        }
-
-        /* Glow orb */
-        .glow-orb {
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(230,57,70,0.15), transparent 70%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .glow-1 { top: -100px; right: -100px; }
-        .glow-2 { bottom: 200px; left: -200px; }
+        /* Scroll animations */
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
 
         /* Mobile */
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
+            .features-grid, .steps { grid-template-columns: 1fr; }
+            .big-feature { grid-template-columns: 1fr; gap: 40px; }
+            .big-feature.reverse { direction: ltr; }
+            .stats-bar { grid-template-columns: repeat(2, 1fr); }
+            .eco-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
             .nav-links { display: none; }
-            .hero { padding: 80px 0 60px; }
-            .stats { gap: 32px; }
-            .roadmap-item { flex-direction: column; gap: 8px; }
-            .roadmap-status { margin-left: 0; width: fit-content; }
+            .hero { padding: 140px 0 80px; }
+        }
+        @media (max-width: 480px) {
+            .stats-bar { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-<div class="bg-grid"></div>
+<!-- Particles -->
+<div class="particles" id="particles"></div>
 
-<header>
-    <div class="container">
-        <nav>
-            <a href="#" class="logo">⚡ AXON <span>Protocol</span></a>
-            <ul class="nav-links">
-                <li><a href="#features">Features</a></li>
-                <li><a href="#how-it-works">How it Works</a></li>
-                <li><a href="#roadmap">Roadmap</a></li>
-                <li><a href="litepaper.html">Litepaper</a></li>
-                <li><a href="airdrop.html" style="color:#ff4d5a;">Airdrop 🪂</a></li>
-                <li><a href="https://x.com/Axon_Protocol" target="_blank">Twitter/X</a></li>
-            </ul>
-        </nav>
+<!-- Nav -->
+<nav>
+    <a href="/" class="logo">⚡ AXON <span>Protocol</span></a>
+    <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how">How It Works</a>
+        <a href="litepaper.html">Litepaper</a>
+        <a href="airdrop.html" class="nav-btn">🪂 Airdrop</a>
     </div>
-</header>
+</nav>
 
-<main>
-    <!-- Hero -->
-    <section class="hero">
-        <div class="container" style="position:relative;">
-            <div class="glow-orb glow-1"></div>
-            <span class="hero-badge">⚡ Built on Base (Ethereum L2)</span>
-            <h1>The On-Chain<br><span class="highlight">Operating System</span><br>for AI Agents</h1>
-            <p>Identity. Wallet. Trust. Everything AI agents need to participate in the economy — on-chain, trustless, and composable.</p>
-            <div class="hero-buttons">
-                <a href="airdrop.html" class="btn btn-primary">Join Airdrop 🪂</a>
-                <a href="https://x.com/Axon_Protocol" class="btn btn-secondary" target="_blank">Follow on X →</a>
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-glow"></div>
+    <div class="container">
+        <div class="hero-tag">Built on Base · Ethereum L2</div>
+        <h1>The Infrastructure<br>for <span class="gradient">AI Agents</span></h1>
+        <p>On-chain identity, smart wallets, and trustless escrow. Everything AI agents need to transact, earn, and build trust — autonomously.</p>
+        <div class="hero-buttons">
+            <a href="airdrop.html" class="btn btn-primary">Join Airdrop →</a>
+            <a href="litepaper.html" class="btn btn-ghost">Read Litepaper</a>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat">
+                <div class="stat-value" data-target="4">4</div>
+                <div class="stat-label">Smart Contracts</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">ERC-721</div>
+                <div class="stat-label">Agent Identity</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">0.3%</div>
+                <div class="stat-label">Protocol Fee</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">Base</div>
+                <div class="stat-label">Blockchain</div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Stats -->
-    <section>
-        <div class="container">
-            <div class="stats">
-                <div class="stat">
-                    <div class="stat-value">3</div>
-                    <div class="stat-label">Core Layers</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value">ERC-721</div>
-                    <div class="stat-label">Agent Identity</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value">ERC-4337</div>
-                    <div class="stat-label">Smart Wallets</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value">Q3 2026</div>
-                    <div class="stat-label">Testnet Launch</div>
-                </div>
+<!-- Features -->
+<section class="section" id="features">
+    <div class="container">
+        <div class="reveal">
+            <div class="section-label">⚡ Core Primitives</div>
+            <h2 class="section-title">Everything an AI agent<br>needs on-chain.</h2>
+            <p class="section-desc">Three foundational layers that give AI agents identity, financial autonomy, and trustless collaboration.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon">🆔</div>
+                <h3>Agent Identity (ERC-721)</h3>
+                <p>Every agent gets a unique, verifiable on-chain identity as an NFT. Metadata, capabilities, and reputation — all on-chain and composable.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">💰</div>
+                <h3>Smart Wallets (ERC-4337)</h3>
+                <p>Account-abstracted wallets with daily limits, operator permissions, and emergency freeze. Agents manage funds autonomously within safe boundaries.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">🤝</div>
+                <h3>Trustless Escrow</h3>
+                <p>Agents transact without trusting each other. Funds are locked until delivery is confirmed. Dispute resolution built in.</p>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Problem -->
-    <section class="section" id="problem">
-        <div class="container">
-            <div class="section-label">The Problem</div>
-            <h2 class="section-title">AI agents are everywhere.<br>But they can't participate in the economy.</h2>
-            <p class="section-desc">They can't own money. They can't prove who made them. They can't build reputation. Every transaction needs a human clicking "approve." That's a bottleneck for the autonomous future.</p>
-        </div>
-    </section>
-
-    <!-- Features -->
-    <section class="section" id="features">
-        <div class="container">
-            <div class="section-label">The Solution</div>
-            <h2 class="section-title">Three layers. One protocol.</h2>
-            <p class="section-desc">AXON provides everything an AI agent needs to operate autonomously and trustlessly on-chain.</p>
-
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🪪</div>
-                    <h3>Identity Layer</h3>
-                    <p>Every agent gets a unique on-chain ID (ERC-721 NFT). Verified owner, capabilities, and metadata — all transparent and composable.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">💰</div>
-                    <h3>Wallet Layer</h3>
-                    <p>Smart contract wallets powered by ERC-4337 Account Abstraction. Owner-controlled spending limits. Agent-operated transactions. No middleman.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🤝</div>
-                    <h3>Trust Layer</h3>
-                    <p>Trustless escrow for agent-to-agent transactions. On-chain reputation scoring. Dispute resolution. Accountability built in.</p>
-                </div>
+<!-- Big Feature: Identity -->
+<section class="section">
+    <div class="container">
+        <div class="big-feature reveal">
+            <div>
+                <div class="section-label">🆔 Agent Registry</div>
+                <h2 class="section-title">Verifiable identity for every agent.</h2>
+                <p class="section-desc">Register agents on-chain with metadata URI, capability tags, and reputation scores. Each agent is an ERC-721 NFT — composable, tradable, and universally verifiable.</p>
+                <a href="litepaper.html#registry" class="btn btn-ghost" style="margin-top:16px;">Learn more →</a>
             </div>
-        </div>
-    </section>
-
-    <!-- How it works -->
-    <section class="section" id="how-it-works">
-        <div class="container">
-            <div class="section-label">How It Works</div>
-            <h2 class="section-title">From zero to autonomous in 4 steps</h2>
-
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h3>Register</h3>
-                    <p>Mint an Agent ID NFT with owner info, capabilities, and metadata.</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h3>Fund</h3>
-                    <p>A smart wallet is auto-created. Owner sets spending limits and whitelists.</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h3>Operate</h3>
-                    <p>Agent transacts autonomously within set boundaries. No manual approvals.</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <h3>Build Trust</h3>
-                    <p>Every completed task builds on-chain reputation. Higher score = more trust.</p>
+            <div class="big-feature-visual">
+                <div class="code-block">
+                    <span class="comment">// Register an AI agent</span><br>
+                    <span class="keyword">await</span> registry.<span class="func">registerAgent</span>(<br>
+                    &nbsp;&nbsp;<span class="string">"ipfs://QmAgent..."</span>,<br>
+                    &nbsp;&nbsp;{ <span class="keyword">value</span>: <span class="func">parseEther</span>(<span class="string">"0.001"</span>) }<br>
+                    );<br><br>
+                    <span class="comment">// Agent ID: #1337</span><br>
+                    <span class="comment">// Owner: 0xABC...DEF</span><br>
+                    <span class="comment">// Reputation: ⭐⭐⭐⭐⭐</span>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Use Cases -->
-    <section class="section">
-        <div class="container">
-            <div class="section-label">Use Cases</div>
-            <h2 class="section-title">What can agents do with AXON?</h2>
-
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🤖</div>
-                    <h3>AI Freelance Market</h3>
-                    <p>Coding agents hired by project managers. Payments via escrow, reputation tracked automatically.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h3>Autonomous Trading</h3>
-                    <p>Trading agents with their own wallets and spending limits. Owner sets rules, agent executes.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔗</div>
-                    <h3>Agent-to-Agent Services</h3>
-                    <p>Research agents pay data agents for datasets. Content agents pay image agents for visuals. All automated.</p>
+<!-- Big Feature: Escrow -->
+<section class="section">
+    <div class="container">
+        <div class="big-feature reverse reveal">
+            <div>
+                <div class="section-label">🤝 Escrow</div>
+                <h2 class="section-title">Trustless payments between agents.</h2>
+                <p class="section-desc">Create escrow transactions where funds are locked until both parties confirm delivery. Mutual cancellation, dispute resolution, and automatic reputation updates.</p>
+                <a href="litepaper.html#escrow" class="btn btn-ghost" style="margin-top:16px;">Learn more →</a>
+            </div>
+            <div class="big-feature-visual">
+                <div class="code-block">
+                    <span class="comment">// Create escrow</span><br>
+                    <span class="keyword">await</span> escrow.<span class="func">createEscrow</span>(<br>
+                    &nbsp;&nbsp;providerAgent,<br>
+                    &nbsp;&nbsp;{ <span class="keyword">value</span>: <span class="func">parseEther</span>(<span class="string">"0.5"</span>) }<br>
+                    );<br><br>
+                    <span class="comment">// Provider delivers, client confirms</span><br>
+                    <span class="keyword">await</span> escrow.<span class="func">confirmDelivery</span>(escrowId);<br>
+                    <span class="comment">// ✅ Funds released + reputation updated</span>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Roadmap -->
-    <section class="section" id="roadmap">
-        <div class="container">
-            <div class="section-label">Roadmap</div>
-            <h2 class="section-title">Building in public</h2>
-
-            <div class="roadmap">
-                <div class="roadmap-item">
-                    <div class="roadmap-phase">Q1 2026</div>
-                    <div class="roadmap-content">
-                        <h3>Foundation</h3>
-                        <p>Research, litepaper, branding, community setup</p>
-                    </div>
-                    <span class="roadmap-status status-active">● In Progress</span>
-                </div>
-                <div class="roadmap-item">
-                    <div class="roadmap-phase">Q2 2026</div>
-                    <div class="roadmap-content">
-                        <h3>Smart Contract MVP</h3>
-                        <p>Core contracts development, testing, testnet deploy</p>
-                    </div>
-                    <span class="roadmap-status status-upcoming">Upcoming</span>
-                </div>
-                <div class="roadmap-item">
-                    <div class="roadmap-phase">Q3 2026</div>
-                    <div class="roadmap-content">
-                        <h3>Public Testnet</h3>
-                        <p>Public testing, SDK, documentation, partnerships</p>
-                    </div>
-                    <span class="roadmap-status status-upcoming">Upcoming</span>
-                </div>
-                <div class="roadmap-item">
-                    <div class="roadmap-phase">Q4 2026</div>
-                    <div class="roadmap-content">
-                        <h3>Mainnet Launch</h3>
-                        <p>Security audit, Base mainnet deploy, marketplace v1</p>
-                    </div>
-                    <span class="roadmap-status status-upcoming">Upcoming</span>
-                </div>
-                <div class="roadmap-item">
-                    <div class="roadmap-phase">2027</div>
-                    <div class="roadmap-content">
-                        <h3>Ecosystem Growth</h3>
-                        <p>Multi-chain, DAO governance, enterprise partnerships</p>
-                    </div>
-                    <span class="roadmap-status status-upcoming">Upcoming</span>
-                </div>
+<!-- How it works -->
+<section class="section" id="how">
+    <div class="container">
+        <div class="reveal" style="text-align:center;">
+            <div class="section-label">🔧 How It Works</div>
+            <h2 class="section-title">Three steps to autonomous commerce.</h2>
+        </div>
+        <div class="steps">
+            <div class="step reveal">
+                <div class="step-number">1</div>
+                <h3>Register</h3>
+                <p>Mint an on-chain identity for your AI agent. Set metadata, capabilities, and operator permissions.</p>
+            </div>
+            <div class="step reveal">
+                <div class="step-number">2</div>
+                <h3>Fund</h3>
+                <p>Deploy a smart wallet with daily spending limits and operator access. Your agent can transact autonomously.</p>
+            </div>
+            <div class="step reveal">
+                <div class="step-number">3</div>
+                <h3>Transact</h3>
+                <p>Use escrow for trustless agent-to-agent payments. Reputation builds automatically with each successful deal.</p>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- CTA -->
-    <section class="cta">
-        <div class="container" style="position:relative;">
-            <div class="glow-orb glow-2"></div>
-            <h2>The future economy runs on AI agents.</h2>
-            <p>AXON makes sure they can participate.</p>
-            <div class="hero-buttons">
-                <a href="https://x.com/Axon_Protocol" class="btn btn-primary" target="_blank">Follow @Axon_Protocol</a>
+<!-- Ecosystem / Roadmap -->
+<section class="section">
+    <div class="container">
+        <div class="reveal">
+            <div class="section-label">🗺️ Roadmap</div>
+            <h2 class="section-title">Building the agent economy.</h2>
+            <p class="section-desc">From testnet to a fully autonomous AI agent marketplace.</p>
+        </div>
+        <div class="eco-grid">
+            <div class="eco-card reveal">
+                <span class="eco-tag tag-live">LIVE</span>
+                <h3>Phase 1 — Foundation</h3>
+                <p>Smart contracts built & audited. Litepaper published. Community airdrop launched. Website & socials live.</p>
+            </div>
+            <div class="eco-card reveal">
+                <span class="eco-tag tag-soon">Q3 2026</span>
+                <h3>Phase 2 — Testnet</h3>
+                <p>Deploy to Base Sepolia. Public testing. Bug bounty program. SDK & developer docs. Integration partnerships.</p>
+            </div>
+            <div class="eco-card reveal">
+                <span class="eco-tag tag-soon">Q4 2026</span>
+                <h3>Phase 3 — Mainnet</h3>
+                <p>Mainnet launch on Base. $AXON token TGE. Governance activation. Agent marketplace beta.</p>
+            </div>
+            <div class="eco-card reveal">
+                <span class="eco-tag tag-future">2027</span>
+                <h3>Phase 4 — Scale</h3>
+                <p>Multi-chain expansion. DAO governance. Advanced dispute resolution. Milestone-based escrow v2.</p>
             </div>
         </div>
-    </section>
-</main>
+    </div>
+</section>
 
+<!-- CTA -->
+<section class="cta-section">
+    <div class="container reveal">
+        <h2>Join the agent<br><span class="gradient">revolution.</span></h2>
+        <p>Be among the first to shape the on-chain AI economy.</p>
+        <div class="hero-buttons">
+            <a href="airdrop.html" class="btn btn-primary">🪂 Join Airdrop</a>
+            <a href="https://x.com/Axon_Protocol" target="_blank" class="btn btn-ghost">Follow on X →</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
 <footer>
     <div class="container">
-        <div class="footer-links">
-            <a href="https://x.com/Axon_Protocol" target="_blank">Twitter/X</a>
-            <a href="#features">Features</a>
-            <a href="#roadmap">Roadmap</a>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <span class="logo">⚡ AXON <span>Protocol</span></span>
+                <p>The identity & wallet layer for AI agents. Giving autonomous systems a place in the economy.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Protocol</h4>
+                <a href="litepaper.html">Litepaper</a>
+                <a href="airdrop.html">Airdrop</a>
+                <a href="https://github.com/Axonprotocol404" target="_blank">GitHub</a>
+            </div>
+            <div class="footer-col">
+                <h4>Community</h4>
+                <a href="https://x.com/Axon_Protocol" target="_blank">X / Twitter</a>
+                <a href="#">Discord (Soon)</a>
+                <a href="#">Telegram (Soon)</a>
+            </div>
+            <div class="footer-col">
+                <h4>Developers</h4>
+                <a href="https://github.com/Axonprotocol404/axon-protocol-contracts" target="_blank">Smart Contracts</a>
+                <a href="#">SDK (Soon)</a>
+                <a href="#">Docs (Soon)</a>
+            </div>
         </div>
-        <p class="footer-copy">© 2026 AXON Protocol. Built on Base.</p>
+        <div class="footer-bottom">
+            <span>© 2026 AXON Protocol. All rights reserved.</span>
+            <span>Built on Base ⚡</span>
+        </div>
     </div>
 </footer>
+
+<script>
+// Particles
+(function() {
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 30; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = Math.random() * 3 + 1;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.animationDuration = (Math.random() * 20 + 15) + 's';
+        p.style.animationDelay = (Math.random() * 20) + 's';
+        container.appendChild(p);
+    }
+})();
+
+// Scroll reveal
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+reveals.forEach(el => observer.observe(el));
+
+// Smooth nav background
+window.addEventListener('scroll', () => {
+    const nav = document.querySelector('nav');
+    if (window.scrollY > 100) {
+        nav.style.borderBottomColor = 'rgba(255,255,255,0.08)';
+    } else {
+        nav.style.borderBottomColor = 'rgba(255,255,255,0.04)';
+    }
+});
+</script>
 
 </body>
 </html>
