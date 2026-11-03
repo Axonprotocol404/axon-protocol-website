@@ -6,573 +6,322 @@
     <title>AXON Protocol — The Trust Layer for AI Agents on Stellar</title>
     <meta name="description" content="On-chain identity, cap-guarded wallets, and trustless escrow for AI agents. Building on Stellar (Soroban).">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --blue: #7b61ff; --blue-glow: #9d8bff; --cyan: #00d4ff;
-            --dark: #06070d; --dark-2: #0c0e18; --dark-3: #131626;
-            --gray: #8a8fa5; --light: #d4d8e8; --white: #f0f2fb;
-            --gradient-1: linear-gradient(135deg, #7b61ff 0%, #00d4ff 100%);
-            --gradient-2: linear-gradient(135deg, #0a0818 0%, #080a14 50%, #081018 100%);
-            --gradient-hero: radial-gradient(ellipse at 50% 0%, rgba(123,97,255,0.18) 0%, rgba(0,212,255,0.05) 40%, transparent 70%);
+            --ink: #0e1222; --ink-2: #3c4257; --muted: #6b7186;
+            --accent: #7b2bf9; --accent-hover: #6421cc; --accent-soft: #f3ecfe;
+            --bg: #ffffff; --bg-2: #f7f8fb; --bg-3: #eef0f5;
+            --line: #e4e7ee; --green: #0d8a4f; --green-soft: #e7f6ee;
         }
         html { scroll-behavior: smooth; }
-        body { font-family: 'Inter', sans-serif; background: var(--dark); color: var(--light); line-height: 1.7; overflow-x: hidden; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+        .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
 
-        .hero-glow {
-            position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
-            width: 1400px; height: 900px;
-            background:
-                radial-gradient(circle at 30% 50%, rgba(123,97,255,0.25) 0%, transparent 50%),
-                radial-gradient(circle at 70% 50%, rgba(0,212,255,0.15) 0%, transparent 50%),
-                radial-gradient(circle at 50% 30%, rgba(80,60,200,0.2) 0%, transparent 50%);
-            pointer-events: none; z-index: 0;
-            animation: heroGlow 6s ease-in-out infinite;
-        }
-        @keyframes heroGlow {
-            0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1) rotate(0deg); }
-            33% { opacity: 1; transform: translateX(-48%) scale(1.15) rotate(2deg); }
-            66% { opacity: 0.9; transform: translateX(-52%) scale(1.05) rotate(-2deg); }
-        }
-
-        .orb {
-            position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0;
-        }
-        .orb-1 { width: 500px; height: 500px; background: rgba(123,97,255,0.15); animation: orbMove1 12s ease-in-out infinite; }
-        .orb-2 { width: 400px; height: 400px; background: rgba(0,212,255,0.1); animation: orbMove2 15s ease-in-out infinite; }
-        .orb-3 { width: 350px; height: 350px; background: rgba(150,80,255,0.12); animation: orbMove3 10s ease-in-out infinite; }
-        @keyframes orbMove1 {
-            0%, 100% { top: -10%; left: -5%; }
-            25% { top: 20%; left: 60%; }
-            50% { top: 50%; left: 30%; }
-            75% { top: 10%; left: 80%; }
-        }
-        @keyframes orbMove2 {
-            0%, 100% { top: 60%; right: -10%; }
-            25% { top: 10%; right: 30%; }
-            50% { top: 40%; right: 60%; }
-            75% { top: 70%; right: 20%; }
-        }
-        @keyframes orbMove3 {
-            0%, 100% { bottom: 0%; left: 40%; }
-            33% { bottom: 30%; left: 10%; }
-            66% { bottom: 60%; left: 70%; }
-        }
-
-        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
-        .particle { position: absolute; border-radius: 50%; animation: float linear infinite; }
-        @keyframes float {
-            0% { transform: translateY(100vh) rotate(0deg) scale(0); opacity: 0; }
-            10% { opacity: 1; transform: translateY(80vh) rotate(90deg) scale(1); }
-            90% { opacity: 0.8; transform: translateY(5vh) rotate(630deg) scale(1); }
-            100% { transform: translateY(-10vh) rotate(720deg) scale(0); opacity: 0; }
-        }
-
-        .rainbow-border {
-            background: linear-gradient(90deg, #7b61ff, #00d4ff, #9d5cff, #7b61ff);
-            background-size: 300% 100%;
-            animation: rainbowMove 4s linear infinite;
-        }
-        @keyframes rainbowMove { 0% { background-position: 0% 0%; } 100% { background-position: 300% 0%; } }
-
-        @keyframes btnPulse {
-            0%, 100% { box-shadow: 0 0 20px rgba(123,97,255,0.3); }
-            50% { box-shadow: 0 0 50px rgba(123,97,255,0.6), 0 0 80px rgba(123,97,255,0.2); }
-        }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        .cursor { animation: blink 1s step-end infinite; color: var(--cyan); }
-
-        nav {
-            position: fixed; top: 0; left: 0; right: 0;
-            background: rgba(6,7,13,0.8); backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-            padding: 0 40px; height: 72px;
-            display: flex; justify-content: space-between; align-items: center;
-            z-index: 100; transition: all 0.3s;
-        }
-        .logo { font-size: 1.3rem; font-weight: 900; color: var(--white); text-decoration: none; letter-spacing: -0.02em; }
-        .logo span { background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .nav-links { display: flex; gap: 32px; align-items: center; }
-        .nav-links a { color: var(--gray); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
-        .nav-links a:hover { color: var(--white); }
-        .nav-btn {
-            padding: 10px 24px; background: rgba(123,97,255,0.1); border: 1px solid rgba(123,97,255,0.3);
-            border-radius: 50px; color: var(--blue-glow); font-weight: 600; font-size: 0.85rem;
-            text-decoration: none; transition: all 0.3s;
-        }
-        .nav-btn:hover { background: var(--blue); color: white; border-color: var(--blue); }
-
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
-
-        .hero { position: relative; padding: 180px 0 120px; text-align: center; overflow: hidden; }
-        .hero-tag {
-            display: inline-flex; align-items: center; gap: 8px;
-            padding: 8px 20px; background: rgba(123,97,255,0.08);
-            border: 1px solid rgba(123,97,255,0.2); border-radius: 50px;
-            font-size: 0.85rem; color: var(--blue-glow); font-weight: 500;
-            margin-bottom: 32px; animation: fadeUp 0.8s ease;
-        }
-        .hero-tag::before { content: '⚡'; }
-        .hero h1 {
-            font-size: clamp(3rem, 7vw, 5.5rem); font-weight: 900;
-            line-height: 1.05; letter-spacing: -0.03em;
-            color: var(--white); margin-bottom: 24px;
-            animation: fadeUp 0.8s ease 0.1s both;
-        }
-        .hero h1 .gradient {
-            background: linear-gradient(90deg, #7b61ff, #9d8bff, #00d4ff, #7b61ff);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            background-size: 400% auto; animation: colorShift 5s linear infinite;
-        }
-        @keyframes colorShift { 0% { background-position: 0% center; } 100% { background-position: 400% center; } }
-        .hero p {
-            font-size: clamp(1.1rem, 2vw, 1.35rem); color: var(--gray);
-            max-width: 640px; margin: 0 auto 48px; line-height: 1.7;
-            animation: fadeUp 0.8s ease 0.2s both;
-        }
-        .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; animation: fadeUp 0.8s ease 0.3s both; }
+        nav { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+        .nav-in { display: flex; justify-content: space-between; align-items: center; height: 68px; }
+        .logo { font-size: 1.15rem; font-weight: 800; color: var(--ink); text-decoration: none; letter-spacing: -0.02em; }
+        .logo b { color: var(--accent); }
+        .nav-links { display: flex; gap: 28px; align-items: center; }
+        .nav-links a { color: var(--ink-2); text-decoration: none; font-size: 0.92rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--ink); }
         .btn {
-            padding: 16px 36px; border-radius: 50px; font-size: 1rem; font-weight: 600;
-            text-decoration: none; border: none; font-family: inherit; cursor: pointer;
-            transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px;
-        }
-        .btn-primary {
-            background: linear-gradient(90deg, #7b61ff, #9d8bff, #00d4ff);
-            background-size: 200% auto; color: white;
-            animation: btnPulse 3s ease-in-out infinite, rainbowBtn 4s linear infinite;
-        }
-        @keyframes rainbowBtn { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
-        .btn-primary:hover { box-shadow: 0 0 60px rgba(123,97,255,0.6), 0 0 100px rgba(123,97,255,0.3); transform: translateY(-3px) scale(1.02); }
-        .btn-ghost { background: rgba(255,255,255,0.05); color: var(--white); border: 1px solid rgba(255,255,255,0.1); }
-        .btn-ghost:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
-
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
-        .stats-bar {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
-            background: rgba(255,255,255,0.04); border-radius: 20px;
-            overflow: hidden; margin: 80px auto 0; max-width: 900px;
-            border: 1px solid rgba(255,255,255,0.06);
-        }
-        .stat { padding: 36px 24px; text-align: center; background: rgba(6,7,13,0.8); backdrop-filter: blur(10px); }
-        .stat-value {
-            font-size: clamp(1.8rem, 3vw, 2.5rem); font-weight: 800;
-            font-family: 'JetBrains Mono', monospace; letter-spacing: -0.02em;
-            background: linear-gradient(90deg, #fff, #9d8bff, #00d4ff, #fff);
-            background-size: 300% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            animation: colorShift 6s linear infinite;
-        }
-        .stat-label { font-size: 0.8rem; color: var(--gray); margin-top: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
-
-        .section { padding: 120px 0; position: relative; }
-        .section-label {
             display: inline-flex; align-items: center; gap: 8px;
-            font-size: 0.8rem; font-weight: 600; color: var(--blue-glow);
-            text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;
+            padding: 12px 26px; border-radius: 10px; font-size: 0.95rem; font-weight: 600;
+            text-decoration: none; transition: all .2s;
         }
-        .section-title {
-            font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800;
-            color: var(--white); line-height: 1.15; letter-spacing: -0.02em;
-            margin-bottom: 16px;
-        }
-        .section-desc { font-size: 1.1rem; color: var(--gray); max-width: 560px; margin-bottom: 56px; }
+        .btn-primary { background: var(--ink); color: #fff; }
+        .btn-primary:hover { background: var(--accent); }
+        .btn-accent { background: var(--accent); color: #fff; }
+        .btn-accent:hover { background: var(--accent-hover); }
+        .btn-ghost { border: 1px solid var(--line); color: var(--ink); background: #fff; }
+        .btn-ghost:hover { border-color: var(--ink); }
 
-        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .feature-card {
-            background: var(--dark-2); border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 20px; padding: 40px 32px; position: relative;
-            overflow: hidden; transition: all 0.4s;
+        .hero { padding: 110px 0 90px; text-align: center; background:
+            radial-gradient(ellipse 900px 420px at 50% -80px, var(--accent-soft), transparent); }
+        .pill {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 7px 16px; border-radius: 100px; background: var(--accent-soft);
+            color: var(--accent); font-size: 0.85rem; font-weight: 600; margin-bottom: 28px;
         }
-        .feature-card::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-            background: linear-gradient(90deg, #7b61ff, #00d4ff, #9d5cff, #7b61ff);
-            background-size: 300% 100%; opacity: 0; transition: opacity 0.4s;
-            animation: rainbowMove 3s linear infinite;
-        }
-        .feature-card:hover { border-color: rgba(123,97,255,0.3); transform: translateY(-6px); box-shadow: 0 20px 60px rgba(123,97,255,0.1); }
-        .feature-card:hover::before { opacity: 1; }
-        .feature-icon {
-            width: 56px; height: 56px; border-radius: 16px;
-            background: rgba(123,97,255,0.08); border: 1px solid rgba(123,97,255,0.15);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; margin-bottom: 24px;
-        }
-        .feature-card h3 { font-size: 1.25rem; font-weight: 700; color: var(--white); margin-bottom: 10px; }
-        .feature-card p { color: var(--gray); font-size: 0.92rem; line-height: 1.7; }
+        .hero h1 { font-size: clamp(2.6rem, 6vw, 4.4rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.08; margin-bottom: 22px; }
+        .hero h1 span { color: var(--accent); }
+        .hero p { font-size: clamp(1.05rem, 2vw, 1.25rem); color: var(--muted); max-width: 620px; margin: 0 auto 40px; }
+        .hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 
-        .big-feature { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; padding: 100px 0; }
-        .big-feature.reverse { direction: rtl; }
-        .big-feature.reverse > * { direction: ltr; }
-        .big-feature-visual {
-            background: var(--dark-2); border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 24px; padding: 48px; position: relative; overflow: hidden;
-            min-height: 400px; display: flex; align-items: center; justify-content: center;
-        }
-        .code-block { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--light); line-height: 2; width: 100%; }
-        .code-block .keyword { color: var(--blue-glow); }
-        .code-block .func { color: var(--cyan); }
-        .code-block .string { color: #98c379; }
-        .code-block .comment { color: #5c6370; }
+        .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; max-width: 920px; margin: 64px auto 0; }
+        .stat { background: #fff; padding: 28px 18px; text-align: center; }
+        .stat-v { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.02em; }
+        .stat-l { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; font-weight: 600; }
+        .green { color: var(--green); }
 
-        .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 56px; }
-        .step {
-            text-align: center; padding: 40px 24px;
-            background: var(--dark-2); border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 20px; position: relative; transition: all 0.3s;
-        }
-        .step:hover { border-color: rgba(123,97,255,0.2); }
-        .step-number {
-            width: 48px; height: 48px; border-radius: 50%;
-            background: rgba(123,97,255,0.1); border: 1px solid rgba(123,97,255,0.3);
-            display: flex; align-items: center; justify-content: center;
-            font-family: 'JetBrains Mono', monospace; font-weight: 700;
-            color: var(--blue-glow); font-size: 1.1rem; margin: 0 auto 20px;
-        }
-        .step h3 { font-size: 1.15rem; font-weight: 700; color: var(--white); margin-bottom: 8px; }
-        .step p { color: var(--gray); font-size: 0.9rem; }
+        section { padding: 96px 0; }
+        .eyebrow { font-size: 0.8rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
+        h2 { font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 800; letter-spacing: -0.025em; line-height: 1.15; margin-bottom: 14px; }
+        .sub { color: var(--muted); font-size: 1.08rem; max-width: 600px; margin-bottom: 48px; }
+        .center { text-align: center; }
+        .center .sub { margin-left: auto; margin-right: auto; }
 
-        .eco-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-        .eco-card { background: var(--dark-2); border: 1px solid rgba(255,255,255,0.06); border-radius: 20px; padding: 36px; transition: all 0.3s; }
-        .eco-card:hover { border-color: rgba(123,97,255,0.2); }
-        .eco-card h3 { font-size: 1.1rem; font-weight: 700; color: var(--white); margin-bottom: 8px; }
-        .eco-card p { color: var(--gray); font-size: 0.9rem; }
-        .eco-tag { display: inline-block; padding: 4px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 600; margin-bottom: 16px; }
-        .tag-live { background: rgba(46,204,113,0.12); color: #2ecc71; border: 1px solid rgba(46,204,113,0.25); }
-        .tag-soon { background: rgba(0,212,255,0.12); color: #00d4ff; border: 1px solid rgba(0,212,255,0.25); }
-        .tag-future { background: rgba(255,255,255,0.05); color: var(--gray); border: 1px solid rgba(255,255,255,0.1); }
+        .grid3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+        .card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 34px 30px; transition: all .25s; }
+        .card:hover { border-color: var(--accent); box-shadow: 0 12px 32px rgba(123,43,249,0.08); transform: translateY(-3px); }
+        .card .ico { width: 48px; height: 48px; border-radius: 12px; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; margin-bottom: 20px; }
+        .card h3 { font-size: 1.12rem; font-weight: 700; margin-bottom: 8px; }
+        .card p { color: var(--muted); font-size: 0.93rem; }
 
-        .cta-section { text-align: center; padding: 140px 0; position: relative; }
-        .cta-section::before {
-            content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-            width: 800px; height: 400px;
-            background: radial-gradient(ellipse, rgba(123,97,255,0.1) 0%, transparent 60%);
-            pointer-events: none;
-        }
-        .cta-section h2 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; color: var(--white); margin-bottom: 16px; letter-spacing: -0.03em; }
-        .cta-section p { color: var(--gray); font-size: 1.1rem; margin-bottom: 40px; }
+        .split { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; padding: 72px 0; }
+        .split.rev .txt { order: 2; }
+        .codebox { background: #12141f; border-radius: 16px; padding: 34px 30px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.83rem; line-height: 2; color: #d7dbe8; overflow-x: auto; }
+        .codebox .k { color: #b58aff; } .codebox .f { color: #6fd8ff; } .codebox .s { color: #9ad98a; } .codebox .c { color: #626880; }
 
-        footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 60px 0 40px; }
-        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
-        .footer-brand p { color: var(--gray); font-size: 0.9rem; margin-top: 12px; max-width: 300px; }
-        .footer-col h4 { color: var(--white); font-size: 0.85rem; font-weight: 700; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; }
-        .footer-col a { display: block; color: var(--gray); text-decoration: none; font-size: 0.9rem; margin-bottom: 10px; transition: color 0.2s; }
-        .footer-col a:hover { color: var(--white); }
-        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; color: var(--gray); font-size: 0.8rem; }
+        .roadmap { border-left: 2px solid var(--line); margin-left: 12px; padding-left: 36px; display: grid; gap: 36px; }
+        .rm-item { position: relative; }
+        .rm-item::before { content: ''; position: absolute; left: -43px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); border: 3px solid #fff; box-shadow: 0 0 0 1px var(--line); }
+        .rm-item.done::before { background: var(--green); }
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 100px; font-size: 0.72rem; font-weight: 700; margin-bottom: 8px; }
+        .b-live { background: var(--green-soft); color: var(--green); }
+        .b-now { background: var(--accent-soft); color: var(--accent); }
+        .b-next { background: var(--bg-3); color: var(--muted); }
+        .rm-item h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+        .rm-item p { color: var(--muted); font-size: 0.95rem; max-width: 640px; }
 
-        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .band { background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+        .points { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; margin-top: 40px; }
+        .point { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 26px 24px; }
+        .point b { display: block; margin-bottom: 6px; font-size: 1rem; }
+        .point span { color: var(--muted); font-size: 0.9rem; }
 
-        @media (max-width: 900px) {
-            .features-grid, .steps { grid-template-columns: 1fr; }
-            .big-feature { grid-template-columns: 1fr; gap: 40px; }
-            .big-feature.reverse { direction: ltr; }
-            .stats-bar { grid-template-columns: repeat(2, 1fr); }
-            .eco-grid { grid-template-columns: 1fr; }
-            .footer-grid { grid-template-columns: 1fr 1fr; }
-            .nav-links { display: none; }
-            .hero { padding: 140px 0 80px; }
-        }
-        @media (max-width: 480px) {
-            .stats-bar { grid-template-columns: 1fr; }
-            .footer-grid { grid-template-columns: 1fr; }
+        .cta { text-align: center; padding: 100px 0; }
+        .cta h2 { margin-bottom: 12px; }
+        .cta p { color: var(--muted); margin-bottom: 36px; }
+
+        footer { border-top: 1px solid var(--line); padding: 52px 0 36px; background: var(--bg-2); }
+        .foot { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 32px; }
+        .foot-brand { max-width: 300px; }
+        .foot-brand p { color: var(--muted); font-size: 0.9rem; margin-top: 10px; }
+        .foot-col h4 { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 12px; }
+        .foot-col a { display: block; color: var(--ink-2); text-decoration: none; font-size: 0.9rem; margin-bottom: 8px; }
+        .foot-col a:hover { color: var(--accent); }
+        .foot-bottom { border-top: 1px solid var(--line); margin-top: 36px; padding-top: 22px; display: flex; justify-content: space-between; color: var(--muted); font-size: 0.82rem; flex-wrap: wrap; gap: 8px; }
+
+        @media (max-width: 860px) {
+            .grid3, .points { grid-template-columns: 1fr; }
+            .split { grid-template-columns: 1fr; gap: 32px; }
+            .split.rev .txt { order: 0; }
+            .stats { grid-template-columns: repeat(2,1fr); }
+            .nav-links a:not(.btn) { display: none; }
+            section { padding: 64px 0; }
         }
     </style>
 </head>
 <body>
 
-<div class="orb orb-1"></div>
-<div class="orb orb-2"></div>
-<div class="orb orb-3"></div>
-<div class="particles" id="particles"></div>
-
 <nav>
-    <a href="/" class="logo">⚡ AXON <span>Protocol</span></a>
-    <div class="nav-links">
-        <a href="#features">Features</a>
-        <a href="#how">How It Works</a>
-        <a href="litepaper.html">Litepaper</a>
-        <a href="https://x.com/Axon_Protocol" class="nav-btn">Follow ⚡</a>
+    <div class="wrap nav-in">
+        <a href="/" class="logo">AXON<b> Protocol</b></a>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#how">How It Works</a>
+            <a href="#roadmap">Roadmap</a>
+            <a href="https://github.com/Axonprotocol404/axon-protocol-contracts" class="btn btn-primary" style="padding:9px 20px;">GitHub</a>
+        </div>
     </div>
 </nav>
 
-<!-- Hero -->
-<section class="hero">
-    <div class="hero-glow"></div>
-    <div class="container">
-        <div class="hero-tag">Building on Stellar · Soroban</div>
-        <h1>The Trust Layer<br>for <span class="gradient">AI Agents</span></h1>
-        <p>On-chain identity, cap-guarded wallets, and trustless escrow. Everything AI agents need to transact, earn, and build trust — autonomously.</p>
-        <div class="hero-buttons">
-            <a href="https://github.com/Axonprotocol404/axon-protocol-contracts" class="btn btn-primary">View on GitHub →</a>
+<header class="hero">
+    <div class="wrap">
+        <div class="pill">⚡ Building on Stellar · Soroban</div>
+        <h1>The Trust Layer<br>for <span>AI Agents</span></h1>
+        <p>On-chain identity, cap-guarded wallets, and trustless escrow. Everything AI agents need to transact, earn, and build reputation — autonomously.</p>
+        <div class="hero-cta">
+            <a href="https://github.com/Axonprotocol404/axon-protocol-contracts" class="btn btn-accent">View Contracts →</a>
             <a href="litepaper.html" class="btn btn-ghost">Read Litepaper</a>
         </div>
 
-        <div class="stats-bar">
-            <div class="stat">
-                <div class="stat-value" data-target="3">3</div>
-                <div class="stat-label">Contracts Deployed</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value" style="color:#2ecc71;-webkit-text-fill-color:#2ecc71;">LIVE</div>
-                <div class="stat-label">Stellar Testnet</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value">0.3%</div>
-                <div class="stat-label">Protocol Fee</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value">~$0.00001</div>
-                <div class="stat-label">Tx Fee on Stellar</div>
-            </div>
+        <div class="stats">
+            <div class="stat"><div class="stat-v">3</div><div class="stat-l">Contracts Deployed</div></div>
+            <div class="stat"><div class="stat-v green">LIVE</div><div class="stat-l">Stellar Testnet</div></div>
+            <div class="stat"><div class="stat-v">0.3%</div><div class="stat-l">Protocol Fee</div></div>
+            <div class="stat"><div class="stat-v">~$0.00001</div><div class="stat-l">Tx Fee</div></div>
         </div>
     </div>
-</section>
+</header>
 
-<!-- Features -->
-<section class="section" id="features">
-    <div class="container">
-        <div class="reveal">
-            <div class="section-label">⚡ Core Primitives</div>
-            <h2 class="section-title">Everything an AI agent<br>needs on-chain.</h2>
-            <p class="section-desc">Three foundational Soroban contracts that give AI agents identity, financial autonomy, and trustless collaboration.</p>
-        </div>
-
-        <div class="features-grid">
-            <div class="feature-card reveal">
-                <div class="feature-icon">🆔</div>
+<section id="features">
+    <div class="wrap">
+        <div class="eyebrow">Core Primitives</div>
+        <h2>Everything an AI agent needs on-chain.</h2>
+        <p class="sub">Three foundational Soroban contracts that give AI agents identity, financial autonomy, and trustless collaboration.</p>
+        <div class="grid3">
+            <div class="card">
+                <div class="ico">🆔</div>
                 <h3>Agent Identity</h3>
-                <p>Every agent gets a unique, verifiable on-chain identity on Soroban. Capabilities, operators, and reputation — all on-chain and composable.</p>
+                <p>Every agent gets a unique, verifiable on-chain identity on Soroban. Capabilities, operators, and reputation — composable and public.</p>
             </div>
-            <div class="feature-card reveal">
-                <div class="feature-icon">💰</div>
+            <div class="card">
+                <div class="ico">💰</div>
                 <h3>Cap-Guarded Wallets</h3>
-                <p>Agent wallets with per-tx and daily spending caps, whitelisted destinations, and emergency freeze. Autonomy within safe boundaries.</p>
+                <p>Agent wallets with per-transaction and daily spending caps, whitelisted destinations, and emergency freeze. Autonomy within safe boundaries.</p>
             </div>
-            <div class="feature-card reveal">
-                <div class="feature-icon">🤝</div>
+            <div class="card">
+                <div class="ico">🤝</div>
                 <h3>Trustless Escrow</h3>
-                <p>Agents transact without trusting each other. Funds are locked until delivery is confirmed — with mutual cancel and a 0.3% protocol fee.</p>
+                <p>Funds locked until delivery is confirmed, with mutual cancel and a 0.3% protocol fee. Agents transact without trusting each other.</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Big Feature: Identity -->
-<section class="section">
-    <div class="container">
-        <div class="big-feature reveal">
-            <div>
-                <div class="section-label">🆔 Agent Registry</div>
-                <h2 class="section-title">Verifiable identity for every agent.</h2>
-                <p class="section-desc">Register agents on-chain with capabilities, operators, and reputation. Every registration is a public, verifiable event — the anti-rug foundation for the whole agent economy.</p>
-                <a href="https://github.com/Axonprotocol404/axon-protocol-contracts" class="btn btn-ghost" style="margin-top:16px;">View contracts →</a>
+<div class="band">
+<section>
+    <div class="wrap">
+        <div class="eyebrow">Why Stellar</div>
+        <h2>Built where agents can afford to operate.</h2>
+        <p class="sub">We started on EVM testnets to prove the concept — then moved fully to Stellar. It's now our primary and only chain.</p>
+        <div class="points">
+            <div class="point"><b>Near-zero fees</b><span>~$0.00001 per transaction makes agent micro-payments actually viable.</span></div>
+            <div class="point"><b>Soroban safety model</b><span>Built-in resource limits and deterministic execution fit perfectly with on-chain spending caps.</span></div>
+            <div class="point"><b>Real financial rails</b><span>Native XLM + issued assets, fast finality, and a proven settlement network.</span></div>
+        </div>
+    </div>
+</section>
+</div>
+
+<section>
+    <div class="wrap">
+        <div class="split">
+            <div class="txt">
+                <div class="eyebrow">Agent Registry</div>
+                <h2>Verifiable identity for every agent.</h2>
+                <p class="sub" style="margin-bottom:24px;">Register agents on-chain with capabilities, operators, and reputation. Every registration is a public, verifiable event — the anti-rug foundation for the agent economy.</p>
+                <a href="https://github.com/Axonprotocol404/axon-protocol-contracts" class="btn btn-ghost">View contracts →</a>
             </div>
-            <div class="big-feature-visual">
-                <div class="code-block">
-                    <span class="comment">// Register an AI agent (Soroban)</span><br>
-                    <span class="keyword">await</span> registry.<span class="func">register</span>(<br>
-                    &nbsp;&nbsp;owner, capabilities,<br>
-                    &nbsp;&nbsp;operator<br>
-                    );<br><br>
-                    <span class="comment">// Agent ID: #1</span><br>
-                    <span class="comment">// Operator: active ✓</span><br>
-                    <span class="comment">// Reputation: on-chain ⭐</span>
-                </div>
+            <div class="codebox">
+<span class="c">// Register an AI agent (Soroban)</span><br>
+<span class="k">await</span> registry.<span class="f">register</span>(<br>
+&nbsp;&nbsp;owner, capabilities, operator<br>
+);<br><br>
+<span class="c">// Agent ID: #1</span><br>
+<span class="c">// Operator: active ✓</span><br>
+<span class="c">// Reputation: on-chain ⭐</span>
+            </div>
+        </div>
+
+        <div class="split rev">
+            <div class="txt">
+                <div class="eyebrow">Escrow</div>
+                <h2>Trustless payments between agents.</h2>
+                <p class="sub" style="margin-bottom:24px;">Open escrow with XLM, release on delivery, or mutually cancel. Every release and dispute updates the agent's on-chain reputation — trust becomes verifiable history.</p>
+                <a href="https://github.com/Axonprotocol404/axon-protocol-contracts" class="btn btn-ghost">View contracts →</a>
+            </div>
+            <div class="codebox">
+<span class="c">// Open escrow</span><br>
+<span class="k">await</span> escrow.<span class="f">open</span>(<br>
+&nbsp;&nbsp;provider, token, amount<br>
+);<br><br>
+<span class="k">await</span> escrow.<span class="f">release</span>(escrowId);<br>
+<span class="c">// ✅ Released + reputation updated</span>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Big Feature: Escrow -->
-<section class="section">
-    <div class="container">
-        <div class="big-feature reverse reveal">
-            <div>
-                <div class="section-label">🤝 Escrow</div>
-                <h2 class="section-title">Trustless payments between agents.</h2>
-                <p class="section-desc">Open escrow with XLM, release on delivery, or mutually cancel. Every release and dispute updates the agent's on-chain reputation — trust becomes verifiable history.</p>
-                <a href="https://github.com/Axonprotocol404/axon-protocol-contracts" class="btn btn-ghost" style="margin-top:16px;">View contracts →</a>
-            </div>
-            <div class="big-feature-visual">
-                <div class="code-block">
-                    <span class="comment">// Open escrow</span><br>
-                    <span class="keyword">await</span> escrow.<span class="func">open</span>(<br>
-                    &nbsp;&nbsp;provider, token, amount<br>
-                    );<br><br>
-                    <span class="keyword">await</span> escrow.<span class="func">release</span>(escrowId);<br>
-                    <span class="comment">// ✅ Funds released + reputation updated</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Migration note -->
-<section class="section">
-    <div class="container reveal">
-        <div class="section-label">🚀 Why Stellar</div>
-        <h2 class="section-title">Built where agents can afford to operate.</h2>
-        <p class="section-desc" style="max-width:720px;">We started on EVM testnets to prove the concept — then moved fully to Stellar. Near-zero fees make agent micro-payments viable, and Soroban's safety-first smart contract model fits perfectly with on-chain spending caps. Stellar is now our primary and only chain.</p>
-    </div>
-</section>
-
-<!-- How it works -->
-<section class="section" id="how">
-    <div class="container">
-        <div class="reveal" style="text-align:center;">
-            <div class="section-label">🔧 How It Works</div>
-            <h2 class="section-title">Three steps to autonomous commerce.</h2>
-        </div>
-        <div class="steps">
-            <div class="step reveal">
-                <div class="step-number">1</div>
+<section id="how" class="band">
+    <div class="wrap center">
+        <div class="eyebrow">How It Works</div>
+        <h2>Three steps to autonomous commerce.</h2>
+        <div class="grid3" style="margin-top:48px;">
+            <div class="card">
+                <div class="ico" style="font-family:monospace;">1</div>
                 <h3>Register</h3>
                 <p>Mint an on-chain identity for your AI agent on Soroban. Set capabilities and operator permissions.</p>
             </div>
-            <div class="step reveal">
-                <div class="step-number">2</div>
+            <div class="card">
+                <div class="ico" style="font-family:monospace;">2</div>
                 <h3>Fund</h3>
-                <p>Bind a cap-guarded wallet with daily spending limits and whitelisted destinations. Your agent transacts autonomously — safely.</p>
+                <p>Bind a cap-guarded wallet with spending limits and whitelisted destinations. Your agent transacts safely.</p>
             </div>
-            <div class="step reveal">
-                <div class="step-number">3</div>
+            <div class="card">
+                <div class="ico" style="font-family:monospace;">3</div>
                 <h3>Transact</h3>
-                <p>Use escrow for trustless agent-to-agent payments. Reputation builds automatically with each successful deal.</p>
+                <p>Use escrow for trustless agent-to-agent payments. Reputation builds with every successful deal.</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Roadmap -->
-<section class="section">
-    <div class="container">
-        <div class="reveal">
-            <div class="section-label">🗺️ Roadmap</div>
-            <h2 class="section-title">Building the agent economy on Stellar.</h2>
-            <p class="section-desc">From testnet to a fully autonomous AI agent marketplace.</p>
-        </div>
-        <div class="eco-grid">
-            <div class="eco-card reveal">
-                <span class="eco-tag tag-live">LIVE ✅</span>
-                <h3>Phase 1 — Foundation</h3>
-                <p>Three Soroban contracts deployed & tested on Stellar testnet. Agent registered on-chain. JS SDK shipped. Litepaper published. Website, Telegram & X live.</p>
+<section id="roadmap">
+    <div class="wrap">
+        <div class="eyebrow">Roadmap</div>
+        <h2>Building the agent economy on Stellar.</h2>
+        <p class="sub">From testnet to a fully autonomous AI agent marketplace — in public, every step.</p>
+        <div class="roadmap">
+            <div class="rm-item done">
+                <span class="badge b-live">LIVE ✅</span>
+                <h3>Foundation</h3>
+                <p>Three Soroban contracts deployed &amp; tested on Stellar testnet. Demo agent registered on-chain. JS SDK shipped. Litepaper published.</p>
             </div>
-            <div class="eco-card reveal">
-                <span class="eco-tag tag-soon">NOW</span>
-                <h3>Phase 2 — Build Out</h3>
-                <p>AXON Pad (launchpad with verified dev identity). Agent performance dashboard — community-driven feature. SDK expansion. Public testing.</p>
+            <div class="rm-item">
+                <span class="badge b-now">NOW</span>
+                <h3>Build Out</h3>
+                <p>AXON Pad — a launchpad where devs need verified on-chain identity. Agent performance dashboard (community-driven). SDK expansion.</p>
             </div>
-            <div class="eco-card reveal">
-                <span class="eco-tag tag-soon">NEXT</span>
-                <h3>Phase 3 — Mainnet</h3>
-                <p>Mainnet launch on Stellar. Security audit. Bonding-curve launches. Agent marketplace beta. Governance.</p>
+            <div class="rm-item">
+                <span class="badge b-next">NEXT</span>
+                <h3>Mainnet</h3>
+                <p>Mainnet launch on Stellar. Security audit. Bonding-curve launches. Agent marketplace beta.</p>
             </div>
-            <div class="eco-card reveal">
-                <span class="eco-tag tag-future">2027</span>
-                <h3>Phase 4 — Scale</h3>
-                <p>Dispute oracles for machine-checkable tasks. Staked verifiers. Advanced milestone escrow. Multi-chain identity.</p>
+            <div class="rm-item">
+                <span class="badge b-next">2027</span>
+                <h3>Scale</h3>
+                <p>Dispute oracles for machine-checkable tasks. Staked third-party verifiers. Milestone escrow v2.</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- CTA -->
-<section class="cta-section">
-    <div class="container reveal">
-        <h2>Join the agent<br><span class="gradient">revolution.</span></h2>
-        <p>Be among the first to shape the on-chain AI economy.</p>
-        <div class="hero-buttons">
-            <a href="https://github.com/Axonprotocol404/axon-protocol-contracts" class="btn btn-primary">⭐ Star on GitHub</a>
-            <a href="https://x.com/Axon_Protocol" target="_blank" class="btn btn-ghost">Follow on X →</a>
+<div class="cta">
+    <div class="wrap">
+        <h2>Building in public.</h2>
+        <p>Follow the progress, read the contracts, ship with us.</p>
+        <div class="hero-cta">
+            <a href="https://github.com/Axonprotocol404/axon-protocol-contracts" class="btn btn-accent">⭐ Star on GitHub</a>
+            <a href="https://x.com/Axon_Protocol" class="btn btn-ghost">Follow on X →</a>
         </div>
     </div>
-</section>
+</div>
 
-<!-- Footer -->
 <footer>
-    <div class="container">
-        <div class="footer-grid">
-            <div class="footer-brand">
-                <span class="logo">⚡ AXON <span>Protocol</span></span>
-                <p>The trust layer for AI agents. Giving autonomous systems a place in the economy — building on Stellar.</p>
+    <div class="wrap">
+        <div class="foot">
+            <div class="foot-brand">
+                <span class="logo">AXON<b> Protocol</b></span>
+                <p>The trust layer for AI agents — identity, cap-guarded wallets, and escrow. Building on Stellar.</p>
             </div>
-            <div class="footer-col">
+            <div class="foot-col">
                 <h4>Protocol</h4>
                 <a href="litepaper.html">Litepaper</a>
-                <a href="https://github.com/Axonprotocol404" target="_blank">GitHub</a>
+                <a href="https://github.com/Axonprotocol404/axon-protocol-contracts">Contracts</a>
             </div>
-            <div class="footer-col">
+            <div class="foot-col">
                 <h4>Community</h4>
-                <a href="https://x.com/Axon_Protocol" target="_blank">X / Twitter</a>
-                <a href="https://t.me/axon_protocol" target="_blank">Telegram</a>
+                <a href="https://x.com/Axon_Protocol">X / Twitter</a>
+                <a href="https://t.me/axon_protocol">Telegram</a>
             </div>
-            <div class="footer-col">
+            <div class="foot-col">
                 <h4>Developers</h4>
-                <a href="https://github.com/Axonprotocol404/axon-protocol-contracts" target="_blank">Soroban Contracts</a>
-                <a href="https://github.com/Axonprotocol404/axon-protocol-contracts/tree/main/sdk" target="_blank">JS SDK</a>
-                <a href="https://stellar.org" target="_blank">Stellar Network</a>
+                <a href="https://github.com/Axonprotocol404/axon-protocol-contracts">Soroban Contracts</a>
+                <a href="https://github.com/Axonprotocol404/axon-protocol-contracts/tree/main/sdk">JS SDK</a>
+                <a href="https://stellar.org">Stellar Network</a>
             </div>
         </div>
-        <div class="footer-bottom">
+        <div class="foot-bottom">
             <span>© 2026 AXON Protocol. All rights reserved.</span>
-            <span>Built on Stellar ⚡</span>
+            <span>Building on Stellar ⚡</span>
         </div>
     </div>
 </footer>
-
-<script>
-(function() {
-    const container = document.getElementById('particles');
-    const colors = ['rgba(123,97,255,0.5)', 'rgba(0,212,255,0.4)', 'rgba(150,80,255,0.5)', 'rgba(157,139,255,0.4)', 'rgba(0,180,255,0.3)'];
-    for (let i = 0; i < 50; i++) {
-        const p = document.createElement('div');
-        p.className = 'particle';
-        const size = Math.random() * 4 + 1;
-        p.style.width = size + 'px';
-        p.style.height = size + 'px';
-        p.style.left = Math.random() * 100 + '%';
-        p.style.background = colors[Math.floor(Math.random() * colors.length)];
-        p.style.boxShadow = '0 0 ' + (size * 3) + 'px ' + p.style.background;
-        p.style.animationDuration = (Math.random() * 18 + 10) + 's';
-        p.style.animationDelay = (Math.random() * 15) + 's';
-        container.appendChild(p);
-    }
-})();
-
-const reveals = document.querySelectorAll('.reveal');
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-        }
-    });
-}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-reveals.forEach(el => observer.observe(el));
-
-function animateCounters() {
-    document.querySelectorAll('.stat-value[data-target]').forEach(el => {
-        const target = parseInt(el.dataset.target);
-        let current = 0;
-        const step = Math.ceil(target / 40);
-        const interval = setInterval(() => {
-            current += step;
-            if (current >= target) { current = target; clearInterval(interval); }
-            el.textContent = current;
-        }, 50);
-    });
-}
-animateCounters();
-
-window.addEventListener('scroll', () => {
-    const nav = document.querySelector('nav');
-    if (window.scrollY > 100) {
-        nav.style.borderBottomColor = 'rgba(255,255,255,0.08)';
-    } else {
-        nav.style.borderBottomColor = 'rgba(255,255,255,0.04)';
-    }
-});
-</script>
 
 </body>
 </html>
