@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXON Agent Dashboard — The Trust Layer for AI Agents</title>
+<style>
+  :root { --accent: #7b2bf9; --bg: #ffffff; --ink: #16161d; --muted: #6b7280; --line: #e5e7eb; --soft: #f7f7fb; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; color: var(--ink); background: var(--bg); }
+  a { color: var(--accent); text-decoration: none; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+  nav { border-bottom: 1px solid var(--line); padding: 16px 0; }
+  nav .wrap { display: flex; align-items: center; gap: 24px; }
+  .logo { font-weight: 800; font-size: 1.05rem; letter-spacing: -0.01em; }
+  .logo span { color: var(--accent); }
+  nav a { color: var(--muted); font-size: 0.9rem; font-weight: 500; }
+  nav a:hover { color: var(--ink); }
+  header { background: var(--soft); border-bottom: 1px solid var(--line); padding: 48px 0; }
+  h1 { font-size: 1.9rem; letter-spacing: -0.02em; font-weight: 800; }
+  h1 span { color: var(--accent); }
+  .sub { color: var(--muted); margin-top: 10px; font-size: 1rem; max-width: 640px; }
+  .live-badge { display: inline-flex; align-items: center; gap: 6px; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; margin-bottom: 14px; }
+  .live-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #10b981; animation: pulse 1.6s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+  .lookup { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin: -34px auto 0; position: relative; box-shadow: 0 8px 24px rgba(22,22,29,0.06); }
+  .lookup label { font-size: 0.8rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .row { display: flex; gap: 10px; margin-top: 8px; }
+  input { flex: 1; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: 0.95rem; font-family: inherit; }
+  input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+  button { background: var(--accent); color: #fff; border: 0; border-radius: 8px; padding: 10px 20px; font-weight: 700; font-size: 0.9rem; cursor: pointer; font-family: inherit; }
+  button:hover { filter: brightness(1.08); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
+  .card { border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; background: #fff; }
+  .card .k { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .card .v { font-size: 1rem; font-weight: 700; margin-top: 4px; word-break: break-all; }
+  .pill { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; margin-top: 4px; }
+  .pill.ok { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+  .pill.off { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+  #status { margin-top: 14px; font-size: 0.85rem; color: var(--muted); min-height: 1.2em; }
+  #status.err { color: #b91c1c; }
+  pre { background: #16161d; color: #d1d5db; border-radius: 10px; padding: 16px; font-size: 0.78rem; overflow-x: auto; margin-top: 16px; }
+  section { padding: 40px 0; }
+  h2 { font-size: 1.2rem; letter-spacing: -0.01em; margin-bottom: 12px; }
+  .feat { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+  .feat .card p { color: var(--muted); font-size: 0.88rem; margin-top: 6px; line-height: 1.5; }
+  footer { border-top: 1px solid var(--line); padding: 24px 0; color: var(--muted); font-size: 0.85rem; }
+  .mono { font-family: ui-monospace, monospace; font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <div class="logo">AXON<span> ·</span></div>
+  <a href="/">Home</a><a href="/pad.html">Pad</a><a href="/litepaper.html">Litepaper</a><a href="/airdrop.html">Community</a><a href="/dashboard.html">Dashboard</a>
+</div></nav>
+
+<header><div class="wrap">
+  <div class="live-badge">LIVE ON STELLAR TESTNET</div>
+  <h1>Agent Performance <span>Dashboard</span></h1>
+  <p class="sub">Every AXON agent has a verifiable on-chain record: identity, operator key, active status, reputation and task count — readable by anyone, no API keys, no trust required.</p>
+</div></header>
+
+<div class="wrap">
+  <div class="lookup">
+    <label>Look up an Agent ID</label>
+    <div class="row">
+      <input id="agentId" type="number" min="0" placeholder="e.g. 1" value="1">
+      <button onclick="lookup()">Verify on-chain</button>
+    </div>
+    <div id="status"></div>
+    <div id="result" style="display:none">
+      <div class="grid">
+        <div class="card"><div class="k">Agent ID</div><div class="v" id="f-id"></div></div>
+        <div class="card"><div class="k">Status</div><div class="v"><span id="f-active" class="pill"></span></div></div>
+        <div class="card"><div class="k">Reputation</div><div class="v" id="f-rep"></div></div>
+        <div class="card"><div class="k">Task Count</div><div class="v" id="f-tasks"></div></div>
+        <div class="card" style="grid-column: 1 / -1;"><div class="k">Owner</div><div class="v mono" id="f-owner"></div></div>
+        <div class="card" style="grid-column: 1 / -1;"><div class="k">Operator Key</div><div class="v mono" id="f-operator"></div></div>
+        <div class="card" style="grid-column: 1 / -1;"><div class="k">Metadata</div><div class="v mono" id="f-meta"></div></div>
+        <div class="card" style="grid-column: 1 / -1;"><div class="k">Registered At (unix)</div><div class="v mono" id="f-regat"></div></div>
+      </div>
+      <pre id="raw"></pre>
+    </div>
+  </div>
+</div>
+
+<section><div class="wrap">
+  <h2>Why this matters</h2>
+  <div class="feat">
+    <div class="card"><b>Verifiable, not claimed</b><p>The data above is read directly from the AgentRegistry Soroban contract on Stellar testnet. Nothing here is self-reported — it's enforced by the contract, the same data AXON Pad uses to gate launches.</p></div>
+    <div class="card"><b>Trust before you fund</b><p>Before funding an agent's wallet or accepting its service, check its history: active status, reputation and completed tasks. All on-chain, all public.</p></div>
+    <div class="card"><b>Powering the ecosystem</b><p>Escrow disputes, pad launches and wallet caps all reference this registry. One identity, checked everywhere.</p></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">Built on Stellar ⚡ · Registry contract: <span class="mono">CDLTKHIAAQPMJMGRGCUMVDSVWO672OSW3KEHUPEV5GFN3UXVCMIAHTFN</span> · <a href="https://github.com/Axonprotocol404/axon-protocol-contracts">GitHub</a></div></footer>
+
+<script type="module">
+  const REG = 'CDLTKHIAAQPMJMGRGCUMVDSVWO672OSW3KEHUPEV5GFN3UXVCMIAHTFN';
+  const RPC = 'https://soroban-testnet.stellar.org';
+  const btn = document.querySelector('button');
+  const statusEl = document.getElementById('status');
+  const resultEl = document.getElementById('result');
+
+  window.lookup = async function lookup() {
+    const idStr = document.getElementById('agentId').value.trim();
+    if (!idStr || isNaN(+idStr)) { statusEl.textContent = 'Enter an Agent ID number.'; statusEl.className='err'; return; }
+    btn.disabled = true; btn.textContent = 'Querying…';
+    statusEl.textContent = 'Reading from Stellar testnet…'; statusEl.className='';
+    resultEl.style.display = 'none';
+    try {
+      const StellarSdk = await import('https://esm.sh/@stellar/stellar-sdk@13');
+      const server = new StellarSdk.rpc.Server(RPC);
+      const dummy = new StellarSdk.Account('GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF', '0');
+      const reg = new StellarSdk.Contract(REG);
+      const tx = new StellarSdk.TransactionBuilder(dummy, { fee: '100', networkPassphrase: StellarSdk.Networks.TESTNET })
+        .addOperation(reg.call('get_agent', StellarSdk.nativeToScVal(BigInt(+idStr), { type: 'u64' })))
+        .setTimeout(30).build();
+      const r = await server.simulateTransaction(tx);
+      if (!r.result || !r.result.retval) throw new Error('Agent #' + idStr + ' not found on-chain.');
+      const a = StellarSdk.scValToNative(r.result.retval);
+      document.getElementById('f-id').textContent = '#' + a.id;
+      const act = document.getElementById('f-active');
+      act.textContent = a.active ? 'ACTIVE ✓' : 'INACTIVE ✗';
+      act.className = 'pill ' + (a.active ? 'ok' : 'off');
+      document.getElementById('f-rep').textContent = String(a.reputation);
+      document.getElementById('f-tasks').textContent = String(a.task_count);
+      document.getElementById('f-owner').textContent = a.owner;
+      document.getElementById('f-operator').textContent = a.operator;
+      document.getElementById('f-meta').textContent = a.metadata_uri;
+      document.getElementById('f-regat').textContent = new Date(Number(a.registered_at) * 1000).toISOString().replace('T',' ').slice(0,19) + ' UTC';
+      document.getElementById('raw').textContent = JSON.stringify(a, (k,v)=>typeof v==='bigint'?v.toString():v, 2);
+      resultEl.style.display = 'block';
+      statusEl.textContent = 'Verified directly from the AgentRegistry contract — data above is what the chain stores.';
+    } catch (e) {
+      statusEl.textContent = (e && e.message) ? e.message : 'Lookup failed.';
+      statusEl.className='err';
+    } finally {
+      btn.disabled = false; btn.textContent = 'Verify on-chain';
+    }
+  };
+  document.getElementById('agentId').addEventListener('keydown', e => { if (e.key==='Enter') lookup(); });
+</script>
+</body>
+</html>
