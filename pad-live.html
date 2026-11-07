@@ -62,9 +62,11 @@
     <div class="card"><div class="k">Raised</div><div class="v" id="s-raised">—</div><div class="progress"><i id="s-bar" style="width:0%"></i></div></div>
     <div class="card"><div class="k">Hard Cap</div><div class="v" id="s-cap">—</div></div>
     <div class="card"><div class="k">Allocation</div><div class="v" id="s-alloc">—</div></div>
+    <div class="card"><div class="k">Token</div><div class="v" id="s-token">—</div></div>
     <div class="card"><div class="k">Status</div><div class="v"><span id="s-status" class="pill">—</span></div></div>
     <div class="card"><div class="k">Verified Dev</div><div class="v">Agent #1 ✓</div></div>
   </div>
+  <p class="h-sub" style="margin-top:10px;font-size:.8rem">⚠️ Testnet demo — token "DEMO" is a placeholder SAC created for this demo sale. No real token is being sold.</p>
   <p id="status">Connecting to Stellar testnet…</p>
 </div></section>
 
@@ -128,6 +130,7 @@
       document.getElementById('s-raised').textContent = fmt(s.raised)+' / '+fmt(s.hard_cap)+' XLM';
       document.getElementById('s-cap').textContent = fmt(s.hard_cap)+' XLM';
       document.getElementById('s-alloc').textContent = fmt(s.token_amount)+' tokens';
+      document.getElementById('s-token').textContent = 'DEMO (SAC testnet)';
       document.getElementById('s-bar').style.width = Math.min(100, Number(s.raised)*100/Math.max(1,Number(s.hard_cap)))+'%';
       const sStat = document.getElementById('s-status');
       const sOpen = !s.finalized && now >= Number(s.starts_at) && now < Number(s.ends_at);
