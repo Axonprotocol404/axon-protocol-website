@@ -10,11 +10,15 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --ink: #0e1222; --ink-2: #3c4257; --muted: #6b7186;
-            --accent: #7b2bf9; --accent-hover: #6421cc; --accent-soft: #f3ecfe;
-            --bg: #ffffff; --bg-2: #f7f8fb; --bg-3: #eef0f5;
-            --line: #e4e7ee; --green: #0d8a4f; --green-soft: #e7f6ee;
+            --ink: #f4f2ff; --ink-2: #cfc9e8; --muted: #9b94b8;
+            --accent: #9d5cff; --accent-hover: #b07dff; --accent-soft: rgba(157,92,255,.14);
+            --bg: #0b0918; --bg-2: #100d22; --bg-3: #171331;
+            --line: rgba(157,92,255,.16); --green: #34d399; --green-soft: rgba(52,211,153,.12);
         }
+        body { background:
+            radial-gradient(ellipse 900px 500px at 85% -100px, rgba(123,43,249,.18), transparent),
+            radial-gradient(ellipse 700px 500px at -10% 40%, rgba(90,60,180,.15), transparent),
+            #0b0918; }
         html { scroll-behavior: smooth; }
         body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.65; -webkit-font-smoothing: antialiased; }
         .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
@@ -35,7 +39,7 @@
         .btn-primary:hover { background: var(--accent); }
         .btn-accent { background: var(--accent); color: #fff; }
         .btn-accent:hover { background: var(--accent-hover); }
-        .btn-ghost { border: 1px solid var(--line); color: var(--ink); background: #fff; }
+        .btn-ghost { border: 1px solid var(--line); color: var(--ink); background: rgba(157,92,255,.08); }
         .btn-ghost:hover { border-color: var(--ink); }
 
         .hero { padding: 110px 0 90px; text-align: center; background:
@@ -51,7 +55,7 @@
         .hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 
         .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; max-width: 920px; margin: 64px auto 0; }
-        .stat { background: #fff; padding: 28px 18px; text-align: center; }
+        .stat { background: rgba(23,19,49,.6); backdrop-filter: blur(8px); border: 1px solid var(--line); border-radius: 14px; padding: 28px 18px; text-align: center; }
         .stat-v { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.02em; }
         .stat-l { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; font-weight: 600; }
         .green { color: var(--green); }
@@ -64,7 +68,7 @@
         .center .sub { margin-left: auto; margin-right: auto; }
 
         .grid3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
-        .card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 34px 30px; transition: all .25s; }
+        .card { background: rgba(23,19,49,.5); border: 1px solid var(--line); border-radius: 16px; padding: 34px 30px; transition: all .25s; }
         .card:hover { border-color: var(--accent); box-shadow: 0 12px 32px rgba(123,43,249,0.08); transform: translateY(-3px); }
         .card .ico { width: 48px; height: 48px; border-radius: 12px; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; margin-bottom: 20px; }
         .card h3 { font-size: 1.12rem; font-weight: 700; margin-bottom: 8px; }
@@ -86,9 +90,9 @@
         .rm-item h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
         .rm-item p { color: var(--muted); font-size: 0.95rem; max-width: 640px; }
 
-        .band { background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+        .band { background: linear-gradient(180deg, rgba(23,19,49,.5), rgba(16,13,34,.2)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
         .points { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; margin-top: 40px; }
-        .point { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 26px 24px; }
+        .point { background: rgba(23,19,49,.55); backdrop-filter: blur(8px); border: 1px solid var(--line); border-radius: 14px; padding: 26px 24px; }
         .point b { display: block; margin-bottom: 6px; font-size: 1rem; }
         .point span { color: var(--muted); font-size: 0.9rem; }
 
@@ -153,7 +157,7 @@
         .hero::after { width: 380px; height: 380px; background: radial-gradient(circle,#c4b5fd,transparent 65%); bottom: -140px; left: -80px; animation: drift 14s ease-in-out infinite alternate-reverse; }
         @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(40px,30px) scale(1.12); } }
         .hero .wrap { position: relative; z-index: 1; }
-        .card { position: relative; background: linear-gradient(#fff,#fff) padding-box, linear-gradient(135deg, rgba(123,43,249,.25), rgba(167,139,250,.08) 40%, rgba(229,231,235,.9)) border-box; border: 1px solid transparent; }
+        .card { position: relative; background: linear-gradient(rgba(23,19,49,.75),rgba(23,19,49,.55)) padding-box, linear-gradient(135deg, rgba(157,92,255,.5), rgba(157,92,255,.08) 45%, rgba(157,92,255,.25)) border-box; border: 1px solid transparent; backdrop-filter: blur(8px); }
         .pill { position: relative; overflow: hidden; }
         .pill::after { content: ''; position: absolute; top: 0; left: -80%; width: 60%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.75), transparent); transform: skewX(-20deg); animation: shimmer 3.2s ease-in-out infinite; }
         @keyframes shimmer { 0% { left: -80%; } 55% { left: 130%; } 100% { left: 130%; } }
@@ -206,14 +210,14 @@
                 <circle cx="90" cy="90" r="46" fill="none" stroke="#7b2bf9" stroke-opacity="0.25" stroke-width="2"/>
                 <text x="90" y="97" text-anchor="middle" font-family="Inter,sans-serif" font-size="20" font-weight="800" fill="#fff">A#1</text>
                 <!-- wallet node -->
-                <rect x="270" y="52" width="110" height="64" rx="14" fill="#fff" stroke="#e5e7eb"/>
-                <rect x="270" y="52" width="110" height="20" rx="10" fill="#f3e8ff"/>
+                <rect x="270" y="52" width="110" height="64" rx="14" fill="rgba(23,19,49,.8)" stroke="rgba(157,92,255,.35)"/>
+                <rect x="270" y="52" width="110" height="20" rx="10" fill="rgba(157,92,255,.25)"/>
                 <circle cx="356" cy="62" r="4" fill="#10b981"/>
-                <text x="284" y="102" font-family="ui-monospace,monospace" font-size="11" fill="#6b7280">cap 500 XLM</text>
+                <text x="284" y="102" font-family="ui-monospace,monospace" font-size="11" fill="#cfc9e8">cap 500 XLM</text>
                 <!-- escrow node -->
-                <rect x="150" y="210" width="130" height="70" rx="14" fill="#fff" stroke="#e5e7eb"/>
+                <rect x="150" y="210" width="130" height="70" rx="14" fill="rgba(23,19,49,.8)" stroke="rgba(157,92,255,.35)"/>
                 <path d="M200 232 l30 0 a10 10 0 0 1 0 20 l-6 0 0 14 -18 0 0 -14 -6 0 a10 10 0 0 1 0 -20 z" fill="#7b2bf9" opacity="0.9"/>
-                <text x="215" y="272" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#6b7280">escrow locked</text>
+                <text x="215" y="272" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#cfc9e8">escrow locked</text>
                 <!-- connections -->
                 <path d="M124 106 C 190 140, 220 170, 210 210" stroke="#7b2bf9" stroke-width="2.5" fill="none" stroke-dasharray="6 6" stroke-opacity="0.6"/>
                 <path d="M122 76 C 190 50, 230 50, 268 66" stroke="#7b2bf9" stroke-width="2.5" fill="none" stroke-dasharray="6 6" stroke-opacity="0.6"/>
@@ -245,17 +249,17 @@
         <p class="sub">Four foundational Soroban contracts that give AI agents identity, financial autonomy, trustless collaboration — and a verified way to launch tokens.</p>
         <div class="grid3 reveal">
             <div class="card">
-                <div class="ico"><svg width="34" height="34" viewBox="0 0 34 34"><rect x="2" y="2" width="30" height="30" rx="9" fill="#f3e8ff"/><circle cx="13" cy="14" r="4.5" fill="#7b2bf9"/><path d="M6 27c1.5-5 12.5-5 14 0" stroke="#7b2bf9" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M22 12h6M22 17h6" stroke="#a78bfa" stroke-width="2.2" stroke-linecap="round"/></svg></div>
+                <div class="ico"><svg width="34" height="34" viewBox="0 0 34 34"><rect x="2" y="2" width="30" height="30" rx="9" fill="rgba(157,92,255,.18)"/><circle cx="13" cy="14" r="4.5" fill="#7b2bf9"/><path d="M6 27c1.5-5 12.5-5 14 0" stroke="#7b2bf9" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M22 12h6M22 17h6" stroke="#a78bfa" stroke-width="2.2" stroke-linecap="round"/></svg></div>
                 <h3>Agent Identity</h3>
                 <p>Every agent gets a unique, verifiable on-chain identity on Soroban. Capabilities, operators, and reputation — composable and public.</p>
             </div>
             <div class="card">
-                <div class="ico"><svg width="34" height="34" viewBox="0 0 34 34"><rect x="2" y="2" width="30" height="30" rx="9" fill="#eef2ff"/><rect x="7" y="10" width="20" height="14" rx="4" fill="#7b2bf9"/><rect x="7" y="14" width="20" height="3" fill="#5b21b6"/><circle cx="23" cy="20.5" r="2" fill="#c4b5fd"/></svg></div>
+                <div class="ico"><svg width="34" height="34" viewBox="0 0 34 34"><rect x="2" y="2" width="30" height="30" rx="9" fill="rgba(157,92,255,.15)"/><rect x="7" y="10" width="20" height="14" rx="4" fill="#7b2bf9"/><rect x="7" y="14" width="20" height="3" fill="#5b21b6"/><circle cx="23" cy="20.5" r="2" fill="#c4b5fd"/></svg></div>
                 <h3>Cap-Guarded Wallets</h3>
                 <p>Agent wallets with per-transaction and daily spending caps, whitelisted destinations, and emergency freeze. Autonomy within safe boundaries.</p>
             </div>
             <div class="card">
-                <div class="ico"><svg width="34" height="34" viewBox="0 0 34 34"><rect x="2" y="2" width="30" height="30" rx="9" fill="#ecfdf5"/><path d="M8 12l9-5 9 5v10l-9 5-9-5z" fill="none" stroke="#059669" stroke-width="2.2" stroke-linejoin="round"/><path d="M8 12l9 5 9-5M17 17v10" stroke="#059669" stroke-width="2.2" fill="none" stroke-linejoin="round"/></svg></div>
+                <div class="ico"><svg width="34" height="34" viewBox="0 0 34 34"><rect x="2" y="2" width="30" height="30" rx="9" fill="rgba(52,211,153,.12)"/><path d="M8 12l9-5 9 5v10l-9 5-9-5z" fill="none" stroke="#059669" stroke-width="2.2" stroke-linejoin="round"/><path d="M8 12l9 5 9-5M17 17v10" stroke="#059669" stroke-width="2.2" fill="none" stroke-linejoin="round"/></svg></div>
                 <h3>Trustless Escrow</h3>
                 <p>Funds locked until delivery is confirmed, with mutual cancel and a 0.3% protocol fee. Agents transact without trusting each other.</p>
             </div>
@@ -323,17 +327,17 @@
         <h2>Three steps to autonomous commerce.</h2>
         <div class="grid3" style="margin-top:48px;">
             <div class="card">
-                <div class="ico"><svg width="34" height="34" viewBox="0 0 34 34"><rect x="2" y="2" width="30" height="30" rx="9" fill="#f3e8ff"/><circle cx="17" cy="17" r="9" fill="none" stroke="#7b2bf9" stroke-width="2.4"/><text x="17" y="21.5" text-anchor="middle" font-family="Inter,sans-serif" font-weight="800" font-size="12" fill="#7b2bf9">1</text></svg></div>
+                <div class="ico"><svg width="34" height="34" viewBox="0 0 34 34"><rect x="2" y="2" width="30" height="30" rx="9" fill="rgba(157,92,255,.18)"/><circle cx="17" cy="17" r="9" fill="none" stroke="#7b2bf9" stroke-width="2.4"/><text x="17" y="21.5" text-anchor="middle" font-family="Inter,sans-serif" font-weight="800" font-size="12" fill="#7b2bf9">1</text></svg></div>
                 <h3>Register</h3>
                 <p>Mint an on-chain identity for your AI agent on Soroban. Set capabilities and operator permissions.</p>
             </div>
             <div class="card">
-                <div class="ico"><svg width="34" height="34" viewBox="0 0 34 34"><rect x="2" y="2" width="30" height="30" rx="9" fill="#f3e8ff"/><rect x="8" y="11" width="18" height="13" rx="4" fill="#7b2bf9"/><rect x="8" y="15" width="18" height="2.6" fill="#5b21b6"/><circle cx="22.5" cy="20.5" r="1.8" fill="#c4b5fd"/></svg></div>
+                <div class="ico"><svg width="34" height="34" viewBox="0 0 34 34"><rect x="2" y="2" width="30" height="30" rx="9" fill="rgba(157,92,255,.18)"/><rect x="8" y="11" width="18" height="13" rx="4" fill="#7b2bf9"/><rect x="8" y="15" width="18" height="2.6" fill="#5b21b6"/><circle cx="22.5" cy="20.5" r="1.8" fill="#c4b5fd"/></svg></div>
                 <h3>Fund</h3>
                 <p>Bind a cap-guarded wallet with spending limits and whitelisted destinations. Your agent transacts safely.</p>
             </div>
             <div class="card">
-                <div class="ico"><svg width="34" height="34" viewBox="0 0 34 34"><rect x="2" y="2" width="30" height="30" rx="9" fill="#f3e8ff"/><path d="M7 17h13" stroke="#7b2bf9" stroke-width="2.6" stroke-linecap="round"/><path d="M16 11l7 6-7 6" stroke="#7b2bf9" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="27" cy="17" r="2.4" fill="#10b981"/></svg></div>
+                <div class="ico"><svg width="34" height="34" viewBox="0 0 34 34"><rect x="2" y="2" width="30" height="30" rx="9" fill="rgba(157,92,255,.18)"/><path d="M7 17h13" stroke="#7b2bf9" stroke-width="2.6" stroke-linecap="round"/><path d="M16 11l7 6-7 6" stroke="#7b2bf9" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="27" cy="17" r="2.4" fill="#10b981"/></svg></div>
                 <h3>Transact</h3>
                 <p>Use escrow for trustless agent-to-agent payments. Reputation builds with every successful deal.</p>
             </div>
