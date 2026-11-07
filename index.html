@@ -168,11 +168,25 @@
         .card:hover .ico svg { transform: scale(1.14) rotate(-4deg); }
         .rm-item::before { content: ''; position: absolute; left: -10px; top: 0; bottom: 0; width: 2px; background: linear-gradient(#a78bfa, transparent); opacity: 0; transition: opacity .4s; }
         .rm-item:hover::before { opacity: 1; }
+                /* bg particles */
+        .bg-particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .bg-particles i { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: rgba(157,92,255,.4); animation: particle linear infinite; }
+        .bg-particles i:nth-child(1) { left: 8%; animation-duration: 14s; } .bg-particles i:nth-child(2) { left: 22%; animation-duration: 18s; animation-delay: 3s; }
+        .bg-particles i:nth-child(3) { left: 38%; animation-duration: 12s; animation-delay: 6s; } .bg-particles i:nth-child(4) { left: 55%; animation-duration: 20s; animation-delay: 1s; }
+        .bg-particles i:nth-child(5) { left: 70%; animation-duration: 16s; animation-delay: 8s; } .bg-particles i:nth-child(6) { left: 86%; animation-duration: 13s; animation-delay: 4s; }
+        .bg-particles i:nth-child(7) { left: 47%; animation-duration: 22s; animation-delay: 10s; } .bg-particles i:nth-child(8) { left: 93%; animation-duration: 17s; animation-delay: 12s; }
+        @keyframes particle { 0% { transform: translateY(105vh); opacity: 0; } 12% { opacity: .8; } 88% { opacity: .5; } 100% { transform: translateY(-5vh); opacity: 0; } }
+        main, nav, header, section, .cta, footer { position: relative; z-index: 1; }
+                .ticker { overflow: hidden; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: rgba(23,19,49,.4); padding: 10px 0; }
+        .ticker-track { display: inline-flex; gap: 42px; white-space: nowrap; animation: ticker 28s linear infinite; color: var(--muted); font-family: ui-monospace,monospace; font-size: .78rem; }
+        .ticker-track span b, .ticker-track span { color: #a78bfa; }
+        @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
         @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
     </style>
 </head>
 <body>
 
+<div class="bg-particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 <nav>
     <div class="wrap nav-in">
         <a href="/" class="logo">AXON<b> Protocol</b></a>
@@ -208,14 +222,35 @@
                 <!-- agent node -->
                 <circle cx="90" cy="90" r="34" fill="url(#g1)" opacity="0.95"/>
                 <circle cx="90" cy="90" r="46" fill="none" stroke="#7b2bf9" stroke-opacity="0.25" stroke-width="2"/>
+                <circle cx="90" cy="90" r="46" fill="none" stroke="#9d5cff" stroke-opacity="0.6" stroke-width="2">
+                  <animate attributeName="r" values="46;58;46" dur="2.6s" repeatCount="indefinite"/>
+                  <animate attributeName="stroke-opacity" values="0.6;0;0.6" dur="2.6s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="90" cy="90" r="46" fill="none" stroke="#9d5cff" stroke-opacity="0.45" stroke-width="1.5">
+                  <animate attributeName="r" values="46;58;46" dur="2.6s" begin="1.3s" repeatCount="indefinite"/>
+                  <animate attributeName="stroke-opacity" values="0.45;0;0.45" dur="2.6s" begin="1.3s" repeatCount="indefinite"/>
+                </circle>
                 <text x="90" y="97" text-anchor="middle" font-family="Inter,sans-serif" font-size="20" font-weight="800" fill="#fff">A#1</text>
+                <g>
+                  <ellipse cx="90" cy="90" rx="60" ry="22" fill="none" stroke="#a78bfa" stroke-opacity="0.5" stroke-width="1.5" stroke-dasharray="4 8">
+                    <animateTransform attributeName="transform" type="rotate" from="0 90 90" to="360 90 90" dur="9s" repeatCount="indefinite"/>
+                  </ellipse>
+                  <circle r="3.5" fill="#a78bfa">
+                    <animateMotion dur="9s" repeatCount="indefinite" path="M150 90 A60 22 0 1 1 30 90 A60 22 0 1 1 150 90"/>
+                  </circle>
+                </g>
                 <!-- wallet node -->
                 <rect x="270" y="52" width="110" height="64" rx="14" fill="rgba(23,19,49,.8)" stroke="rgba(157,92,255,.35)"/>
                 <rect x="270" y="52" width="110" height="20" rx="10" fill="rgba(157,92,255,.25)"/>
+                <rect x="274" y="56" width="0" height="12" rx="6" fill="#9d5cff" opacity="0.9">
+                  <animate attributeName="width" values="0;66;60;70;64" dur="5s" repeatCount="indefinite"/>
+                </rect>
                 <circle cx="356" cy="62" r="4" fill="#10b981"/>
                 <text x="284" y="102" font-family="ui-monospace,monospace" font-size="11" fill="#cfc9e8">cap 500 XLM</text>
                 <!-- escrow node -->
-                <rect x="150" y="210" width="130" height="70" rx="14" fill="rgba(23,19,49,.8)" stroke="rgba(157,92,255,.35)"/>
+                <rect x="150" y="210" width="130" height="70" rx="14" fill="rgba(23,19,49,.8)" stroke="rgba(157,92,255,.35)">
+                  <animate attributeName="stroke" values="rgba(157,92,255,.35);rgba(157,92,255,.9);rgba(157,92,255,.35)" dur="2.8s" repeatCount="indefinite"/>
+                </rect>
                 <path d="M200 232 l30 0 a10 10 0 0 1 0 20 l-6 0 0 14 -18 0 0 -14 -6 0 a10 10 0 0 1 0 -20 z" fill="#7b2bf9" opacity="0.9"/>
                 <text x="215" y="272" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#cfc9e8">escrow locked</text>
                 <!-- connections -->
@@ -224,8 +259,13 @@
                 <!-- tx dots -->
                 <circle r="4" fill="#7b2bf9"><animateMotion dur="3s" repeatCount="indefinite" path="M122 76 C 190 50, 230 50, 268 66"/></circle>
                 <circle r="4" fill="#10b981"><animateMotion dur="3.6s" repeatCount="indefinite" path="M124 106 C 190 140, 220 170, 210 210"/></circle>
+                <circle r="3" fill="#34d399" opacity="0.9"><animateMotion dur="4.4s" repeatCount="indefinite" path="M210 210 C 220 170, 190 140, 124 106"/></circle>
+                <circle r="2.6" fill="#c4b5fd" opacity="0.8"><animateMotion dur="3.1s" begin="1.5s" repeatCount="indefinite" path="M268 66 C 230 50, 190 50, 122 76"/></circle>
                 <!-- stellar chip -->
-                <rect x="330" y="216" width="66" height="58" rx="12" fill="#16161d"/>
+                <rect x="330" y="216" width="66" height="58" rx="12" fill="#16161d" stroke="rgba(157,92,255,.4)"/>
+                <circle cx="384" cy="224" r="3" fill="#34d399">
+                  <animate attributeName="opacity" values="1;.2;1" dur="1.4s" repeatCount="indefinite"/>
+                </circle>
                 <text x="363" y="240" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="800" fill="#fff">XLM</text>
                 <text x="363" y="258" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="#a78bfa">testnet ✓</text>
                 <path d="M282 244 C 305 244, 310 244, 328 244" stroke="#10b981" stroke-width="2.5" fill="none" stroke-opacity="0.7"/>
@@ -385,6 +425,12 @@
                 <a href="https://x.com/Axon_Protocol" class="btn btn-ghost">Follow on X →</a>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <span>● AgentRegistry CDLTKHIA… — LIVE</span><span>● AgentWallet CB3RBWCQ… — LIVE</span><span>● SimpleEscrow CBT52U22… — LIVE</span><span>● TokenSale CAR2SSLR… — Sale #0 OPEN</span><span>● BondingCurve CAILFEYR… — Curve #0 LIVE</span><span>● AgentRegistry CDLTKHIA… — LIVE</span><span>● AgentWallet CB3RBWCQ… — LIVE</span><span>● SimpleEscrow CBT52U22… — LIVE</span><span>● TokenSale CAR2SSLR… — Sale #0 OPEN</span><span>● BondingCurve CAILFEYR… — Curve #0 LIVE</span>
     </div>
 </div>
 
