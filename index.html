@@ -119,6 +119,14 @@
         .hero-split .hero p { margin-left: 0; }
         .hero-art { animation: float 5s ease-in-out infinite; }
         @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+            #how .grid3 { position: relative; }
+        #how .grid3 .card:not(:last-child)::after { content: '→'; position: absolute; right: -26px; top: 50%; transform: translateY(-50%); color: #a78bfa; font-weight: 800; font-size: 1.3rem; }
+        @media (max-width: 860px) { #how .grid3 .card::after { display: none; } }
+        .rm-item { position: relative; }
+        .cta-band { background: linear-gradient(120deg,#7b2bf9,#a855f7); border-radius: 16px; color: #fff; padding: 36px 28px; text-align: center; }
+        .cta-band h2 { color: #fff; }
+        .cta-band p { color: #ede9fe; margin-top: 8px; }
+        .cta-band .btn-ghost { border-color: rgba(255,255,255,.6); color: #fff; }
     </style>
 </head>
 <body>
@@ -277,17 +285,17 @@
         <h2>Three steps to autonomous commerce.</h2>
         <div class="grid3" style="margin-top:48px;">
             <div class="card">
-                <div class="ico" style="font-family:monospace;">1</div>
+                <div class="ico"><svg width="34" height="34" viewBox="0 0 34 34"><rect x="2" y="2" width="30" height="30" rx="9" fill="#f3e8ff"/><circle cx="17" cy="17" r="9" fill="none" stroke="#7b2bf9" stroke-width="2.4"/><text x="17" y="21.5" text-anchor="middle" font-family="Inter,sans-serif" font-weight="800" font-size="12" fill="#7b2bf9">1</text></svg></div>
                 <h3>Register</h3>
                 <p>Mint an on-chain identity for your AI agent on Soroban. Set capabilities and operator permissions.</p>
             </div>
             <div class="card">
-                <div class="ico" style="font-family:monospace;">2</div>
+                <div class="ico"><svg width="34" height="34" viewBox="0 0 34 34"><rect x="2" y="2" width="30" height="30" rx="9" fill="#f3e8ff"/><rect x="8" y="11" width="18" height="13" rx="4" fill="#7b2bf9"/><rect x="8" y="15" width="18" height="2.6" fill="#5b21b6"/><circle cx="22.5" cy="20.5" r="1.8" fill="#c4b5fd"/></svg></div>
                 <h3>Fund</h3>
                 <p>Bind a cap-guarded wallet with spending limits and whitelisted destinations. Your agent transacts safely.</p>
             </div>
             <div class="card">
-                <div class="ico" style="font-family:monospace;">3</div>
+                <div class="ico"><svg width="34" height="34" viewBox="0 0 34 34"><rect x="2" y="2" width="30" height="30" rx="9" fill="#f3e8ff"/><path d="M7 17h13" stroke="#7b2bf9" stroke-width="2.6" stroke-linecap="round"/><path d="M16 11l7 6-7 6" stroke="#7b2bf9" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="27" cy="17" r="2.4" fill="#10b981"/></svg></div>
                 <h3>Transact</h3>
                 <p>Use escrow for trustless agent-to-agent payments. Reputation builds with every successful deal.</p>
             </div>
@@ -327,11 +335,13 @@
 
 <div class="cta">
     <div class="wrap">
-        <h2>Building in public.</h2>
-        <p>Follow the progress, read the contracts, ship with us.</p>
-        <div class="hero-cta">
-            <a href="https://github.com/Axonprotocol404/axon-protocol-contracts" class="btn btn-accent">⭐ Star on GitHub</a>
-            <a href="https://x.com/Axon_Protocol" class="btn btn-ghost">Follow on X →</a>
+        <div class="cta-band">
+            <h2>Building in public.</h2>
+            <p>Follow the progress, read the contracts, ship with us.</p>
+            <div class="hero-cta" style="justify-content:center;margin-top:20px;">
+                <a href="https://github.com/Axonprotocol404/axon-protocol-contracts" class="btn" style="background:#fff;color:#7b2bf9;">⭐ Star on GitHub</a>
+                <a href="https://x.com/Axon_Protocol" class="btn btn-ghost">Follow on X →</a>
+            </div>
         </div>
     </div>
 </div>
