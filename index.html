@@ -146,6 +146,24 @@
         .rm-item:hover .badge { transform: scale(1.08); }
         .btn { transition: transform .25s, box-shadow .25s, filter .25s; }
         .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(123,43,249,.25); }
+                /* --- level 2: aurora bg + gradient borders + shimmer --- */
+        .hero { position: relative; overflow: hidden; }
+        .hero::before, .hero::after { content: ''; position: absolute; border-radius: 50%; filter: blur(70px); opacity: .5; z-index: 0; pointer-events: none; }
+        .hero::before { width: 420px; height: 420px; background: radial-gradient(circle,#a78bfa,transparent 65%); top: -120px; right: -60px; animation: drift 12s ease-in-out infinite alternate; }
+        .hero::after { width: 380px; height: 380px; background: radial-gradient(circle,#c4b5fd,transparent 65%); bottom: -140px; left: -80px; animation: drift 14s ease-in-out infinite alternate-reverse; }
+        @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(40px,30px) scale(1.12); } }
+        .hero .wrap { position: relative; z-index: 1; }
+        .card { position: relative; background: linear-gradient(#fff,#fff) padding-box, linear-gradient(135deg, rgba(123,43,249,.25), rgba(167,139,250,.08) 40%, rgba(229,231,235,.9)) border-box; border: 1px solid transparent; }
+        .pill { position: relative; overflow: hidden; }
+        .pill::after { content: ''; position: absolute; top: 0; left: -80%; width: 60%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.75), transparent); transform: skewX(-20deg); animation: shimmer 3.2s ease-in-out infinite; }
+        @keyframes shimmer { 0% { left: -80%; } 55% { left: 130%; } 100% { left: 130%; } }
+        .stat-v { font-variant-numeric: tabular-nums; }
+        .hero-art { transform: perspective(900px) rotateX(4deg); transition: transform .6s cubic-bezier(.16,1,.3,1); will-change: transform; }
+        .hero:hover .hero-art { transform: perspective(900px) rotateX(1.5deg) translateY(-4px); }
+        #how .ico svg, .ico svg { transition: transform .45s cubic-bezier(.16,1,.3,1); }
+        .card:hover .ico svg { transform: scale(1.14) rotate(-4deg); }
+        .rm-item::before { content: ''; position: absolute; left: -10px; top: 0; bottom: 0; width: 2px; background: linear-gradient(#a78bfa, transparent); opacity: 0; transition: opacity .4s; }
+        .rm-item:hover::before { opacity: 1; }
         @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
     </style>
 </head>
@@ -402,6 +420,36 @@
     es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
   }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // count-up untuk angka stat
+  function animateVal(el, target, suffix, decimals) {
+    const dur = 1400, t0 = performance.now();
+    function tick(t) {
+      const p = Math.min(1, (t - t0) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = (target * eased).toFixed(decimals) + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  const stats = [
+    { sel: '.stat:nth-child(1) .stat-v', target: 5, suffix: '', dec: 0 },
+    { sel: '.stat:nth-child(3) .stat-v', target: 0.3, suffix: '%', dec: 1 },
+  ];
+  const so = new IntersectionObserver(es => {
+    es.forEach(e => { if (e.isIntersecting) { stats.forEach(cfg => { const el = document.querySelector(cfg.sel); if (el) animateVal(el, cfg.target, cfg.suffix, cfg.dec); }); so.disconnect(); } });
+  }, { threshold: 0.4 });
+  const statsEl = document.querySelector('.stats');
+  if (statsEl) so.observe(statsEl);
+
+  // parallax halus ilustrasi
+  const art = document.querySelector('.hero-art');
+  if (art && matchMedia('(pointer:fine)').matches) {
+    addEventListener('mousemove', ev => {
+      const x = (ev.clientX / innerWidth - .5) * 14, y = (ev.clientY / innerHeight - .5) * 10;
+      art.style.transform = `perspective(900px) rotateX(2deg) rotateY(${x}deg) translateY(${y}px)`;
+    });
+  }
 </script>
 </body>
 </html>
