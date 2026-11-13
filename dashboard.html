@@ -159,7 +159,16 @@
 </div>
 
 <script type="module">
-const RPC_URL = "https://soroban-testnet.stellar.org";
+const RPC_ENDPOINTS = [
+  "https://soroban-testnet.stellar.org",
+  "https://stellar-testnet-rpc.publicnode.com",
+];
+const SDK_SOURCES = [
+  "https://esm.run/@stellar/stellar-sdk@14",
+  "https://esm.sh/@stellar/stellar-sdk@14",
+  "https://cdn.jsdelivr.net/npm/@stellar/stellar-sdk@14/+esm",
+];
+const withTimeout = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), ms))]);
 const SOURCE  = "GDI3YMIP6AD2AWOYFPBREESK4EL77DODIGDVO4SMVT2M5PIOEDSSUXGY";
 const C = {
   registry: "CDLTKHIAAQPMJMGRGCUMVDSVWO672OSW3KEHUPEV5GFN3UXVCMIAHTFN",
@@ -180,19 +189,49 @@ document.querySelectorAll("[data-copy]").forEach((b) =>
   b.addEventListener("click", () => { navigator.clipboard?.writeText(b.dataset.copy); b.textContent = "copied"; setTimeout(() => (b.textContent = "copy"), 1200); })
 );
 
-let sdk = null, server = null, account = null;
+let sdk = null, servers = [], serverIdx = 0, account = null;
+const server = () => servers[serverIdx].s;
+async function loadSdk() {
+  let last = null;
+  for (const src of SDK_SOURCES) {
+    try { return await withTimeout(import(src), 15000); } catch (e) { last = e; }
+  }
+  throw last || new Error("could not load Stellar SDK");
+}
 async function init() {
-  sdk = await import("https://esm.run/@stellar/stellar-sdk@14");
-  server = new sdk.rpc.Server(RPC_URL);
-  account = await server.getAccount(SOURCE);
+  sdk = await loadSdk();
+  const checks = await Promise.all(RPC_ENDPOINTS.map(async (url) => {
+    try {
+      const s = new sdk.rpc.Server(url);
+      const h = await withTimeout(s.getHealth(), 9000);
+      return h && h.status === "healthy" ? { url, s } : null;
+    } catch { return null; }
+  }));
+  servers = checks.filter(Boolean);
+  if (!servers.length) throw new Error("no Soroban RPC endpoint reachable");
+  serverIdx = 0;
+  account = await withTimeout(server().getAccount(SOURCE), 12000);
 }
 async function call(contractId, method, ...args) {
-  const contract = new sdk.Contract(contractId);
-  const tx = new sdk.TransactionBuilder(account, { fee: "100", networkPassphrase: sdk.Networks.TESTNET })
-    .addOperation(contract.call(method, ...args)).setTimeout(30).build();
-  const sim = await server.simulateTransaction(tx);
-  if (sdk.rpc.Api.isSimulationError(sim)) throw new Error(sim.error || "simulation failed");
-  return sdk.scValToNative(sim.result.retval);
+  let lastErr = null;
+  for (let attempt = 0; attempt < Math.max(servers.length, 1); attempt++) {
+    try {
+      const contract = new sdk.Contract(contractId);
+      const tx = new sdk.TransactionBuilder(account, { fee: "100", networkPassphrase: sdk.Networks.TESTNET })
+        .addOperation(contract.call(method, ...args)).setTimeout(30).build();
+      const sim = await withTimeout(server().simulateTransaction(tx), 20000);
+      if (sdk.rpc.Api.isSimulationError(sim)) throw Object.assign(new Error(sim.error || "simulation failed"), { sim: true });
+      return sdk.scValToNative(sim.result.retval);
+    } catch (e) {
+      if (e.sim) throw e;
+      lastErr = e;
+      if (attempt < servers.length - 1) {
+        serverIdx = (serverIdx + 1) % servers.length;
+        try { account = await withTimeout(server().getAccount(SOURCE), 12000); } catch {}
+      }
+    }
+  }
+  throw lastErr || new Error("RPC call failed");
 }
 const u64 = (n) => sdk.nativeToScVal(BigInt(n), { type: "u64" });
 
@@ -296,29 +335,37 @@ async function renderEscrow(id) {
 }
 
 (async () => {
-  try {
-    await init();
-    $("liveBadge").textContent = "● LIVE ON STELLAR TESTNET";
-    const [agent, sales, curves] = await Promise.all([renderAgent(1), renderSale(), renderCurve(), renderWallet()]);
-    $("statAgents").textContent = agent ? "1 (demo)" : "—";
-    $("statSales").textContent = sales ?? "—";
-    $("statCurves").textContent = curves ?? "—";
-  } catch (e) {
-    const b = $("liveBadge"); b.className = "live-badge err"; b.textContent = "LIVE DATA UNAVAILABLE — RPC UNREACHABLE";
-    for (const id of ["agentRows", "saleRows", "curveRows", "walletRows"]) {
-      const el = $(id); if (el) el.innerHTML = row("Status", '<span class="pill bad">could not reach Soroban RPC</span>');
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      await init();
+      $("liveBadge").textContent = "● LIVE ON STELLAR TESTNET";
+      const [agent, sales, curves] = await Promise.all([renderAgent(1), renderSale(), renderCurve(), renderWallet()]);
+      $("statAgents").textContent = agent ? "1 (demo)" : "—";
+      $("statSales").textContent = sales ?? "—";
+      $("statCurves").textContent = curves ?? "—";
+      return;
+    } catch (e) {
+      if (attempt === 0) {
+        $("liveBadge").textContent = "CONNECTION SLOW — RETRYING…";
+        await new Promise((r) => setTimeout(r, 2500));
+        continue;
+      }
+      const b = $("liveBadge"); b.className = "live-badge err"; b.textContent = "LIVE DATA UNAVAILABLE — RPC UNREACHABLE (RELOAD TO RETRY)";
+      for (const id of ["agentRows", "saleRows", "curveRows", "walletRows"]) {
+        const el = $(id); if (el) el.innerHTML = row("Status", '<span class="pill bad">could not reach Soroban RPC</span>');
+      }
+      $("statAgents").textContent = "—"; $("statSales").textContent = "—"; $("statCurves").textContent = "—";
     }
-    $("statAgents").textContent = "—"; $("statSales").textContent = "—"; $("statCurves").textContent = "—";
   }
 })();
 
 $("agentLookupBtn").addEventListener("click", () => {
   const id = parseInt($("agentIdInput").value, 10);
-  if (Number.isFinite(id) && id >= 1 && server) renderAgent(id);
+  if (Number.isFinite(id) && id >= 1 && servers.length) renderAgent(id);
 });
 $("escrowLookupBtn").addEventListener("click", () => {
   const id = parseInt($("escrowIdInput").value, 10);
-  if (Number.isFinite(id) && id >= 0 && server) renderEscrow(id);
+  if (Number.isFinite(id) && id >= 0 && servers.length) renderEscrow(id);
 });
 </script>
 </body>
