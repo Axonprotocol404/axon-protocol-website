@@ -3,143 +3,323 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AXON Agent Dashboard — The Trust Layer for AI Agents</title>
+<title>AXON Protocol Dashboard — Live on Stellar Testnet</title>
+<meta name="description" content="Live read-only dashboard for AXON Protocol on Stellar testnet: Agent Registry, Cap-Guarded Wallet, Trustless Escrow, AXON Pad v0 fixed-price sales and v1 bonding curves — read directly from Soroban contracts.">
 <style>
-  :root { --accent: #7b2bf9; --bg: #ffffff; --ink: #16161d; --muted: #6b7280; --line: #e5e7eb; --soft: #f7f7fb; }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Inter', -apple-system, sans-serif; color: var(--ink); background: var(--bg); }
-  a { color: var(--accent); text-decoration: none; }
-  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
-  nav { border-bottom: 1px solid var(--line); padding: 16px 0; }
-  nav .wrap { display: flex; align-items: center; gap: 24px; }
-  .logo { font-weight: 800; font-size: 1.05rem; letter-spacing: -0.01em; }
-  .logo span { color: var(--accent); }
-  nav a { color: var(--muted); font-size: 0.9rem; font-weight: 500; }
-  nav a:hover { color: var(--ink); }
-  header { background: var(--soft); border-bottom: 1px solid var(--line); padding: 48px 0; }
-  h1 { font-size: 1.9rem; letter-spacing: -0.02em; font-weight: 800; }
-  h1 span { color: var(--accent); }
-  .sub { color: var(--muted); margin-top: 10px; font-size: 1rem; max-width: 640px; }
-  .live-badge { display: inline-flex; align-items: center; gap: 6px; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; margin-bottom: 14px; }
-  .live-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #10b981; animation: pulse 1.6s infinite; }
-  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
-  .lookup { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin: -34px auto 0; position: relative; box-shadow: 0 8px 24px rgba(22,22,29,0.06); }
-  .lookup label { font-size: 0.8rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
-  .row { display: flex; gap: 10px; margin-top: 8px; }
-  input { flex: 1; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: 0.95rem; font-family: inherit; }
-  input:focus { outline: 2px solid var(--accent); border-color: transparent; }
-  button { background: var(--accent); color: #fff; border: 0; border-radius: 8px; padding: 10px 20px; font-weight: 700; font-size: 0.9rem; cursor: pointer; font-family: inherit; }
-  button:hover { filter: brightness(1.08); }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; }
-  .card { border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; background: #fff; }
-  .card .k { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
-  .card .v { font-size: 1rem; font-weight: 700; margin-top: 4px; word-break: break-all; }
-  .pill { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; margin-top: 4px; }
-  .pill.ok { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
-  .pill.off { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
-  #status { margin-top: 14px; font-size: 0.85rem; color: var(--muted); min-height: 1.2em; }
-  #status.err { color: #b91c1c; }
-  pre { background: #16161d; color: #d1d5db; border-radius: 10px; padding: 16px; font-size: 0.78rem; overflow-x: auto; margin-top: 16px; }
-  section { padding: 40px 0; }
-  h2 { font-size: 1.2rem; letter-spacing: -0.01em; margin-bottom: 12px; }
-  .feat { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
-  .feat .card p { color: var(--muted); font-size: 0.88rem; margin-top: 6px; line-height: 1.5; }
-  footer { border-top: 1px solid var(--line); padding: 24px 0; color: var(--muted); font-size: 0.85rem; }
-  .mono { font-family: ui-monospace, monospace; font-size: 0.8rem; }
+  :root { --accent:#7b2bf9; --bg:#ffffff; --ink:#16161d; --muted:#6b7280; --line:#e5e7eb; --soft:#f7f7fb;
+          --ok:#047857; --okbg:#ecfdf5; --warn:#b45309; --warnbg:#fffbeb; --bad:#b91c1c; --badbg:#fef2f2; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',-apple-system,sans-serif; color:var(--ink); background:var(--bg); line-height:1.55; }
+  a { color:var(--accent); text-decoration:none; } a:hover { text-decoration:underline; }
+  .wrap { max-width:960px; margin:0 auto; padding:0 24px; }
+  nav { border-bottom:1px solid var(--line); padding:16px 0; }
+  nav .wrap { display:flex; align-items:center; gap:24px; flex-wrap:wrap; }
+  .logo { font-weight:800; font-size:1.05rem; letter-spacing:-0.01em; }
+  .logo span { color:var(--accent); }
+  nav a { color:var(--muted); font-size:0.9rem; font-weight:500; }
+  nav a:hover { color:var(--ink); }
+  header { background:var(--soft); border-bottom:1px solid var(--line); padding:48px 0 64px; }
+  h1 { font-size:1.9rem; letter-spacing:-0.02em; font-weight:800; }
+  h1 span { color:var(--accent); }
+  .sub { color:var(--muted); margin-top:10px; font-size:1rem; max-width:680px; }
+  .live-badge { display:inline-flex; align-items:center; gap:6px; background:var(--okbg); color:var(--ok); border:1px solid #a7f3d0; font-size:0.75rem; font-weight:700; padding:4px 10px; border-radius:999px; margin-bottom:14px; }
+  .live-badge::before { content:''; width:7px; height:7px; border-radius:50%; background:#10b981; animation:pulse 1.6s infinite; }
+  .live-badge.err { background:var(--badbg); color:var(--bad); border-color:#fecaca; }
+  .live-badge.err::before { background:#ef4444; animation:none; }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.35; } }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin:-34px auto 0; position:relative; }
+  .stat { background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px 18px; box-shadow:0 8px 24px rgba(22,22,29,0.05); }
+  .stat .k { color:var(--muted); font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; }
+  .stat .v { font-size:1.35rem; font-weight:800; margin-top:2px; }
+  h2 { font-size:1.15rem; font-weight:800; letter-spacing:-0.01em; margin:38px 0 6px; }
+  .h2sub { color:var(--muted); font-size:0.92rem; margin-bottom:14px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:14px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:12px; padding:20px; }
+  .card h3 { font-size:1rem; font-weight:800; margin-bottom:4px; }
+  .card .desc { color:var(--muted); font-size:0.88rem; margin-bottom:12px; }
+  .addr { font-family:ui-monospace,Menlo,monospace; font-size:0.68rem; word-break:break-all; background:var(--soft);
+          border:1px solid var(--line); border-radius:8px; padding:8px 10px; display:flex; justify-content:space-between; gap:8px; align-items:center; }
+  .addr button { background:#fff; border:1px solid var(--line); color:var(--muted); border-radius:6px; font-size:0.7rem; padding:3px 8px; cursor:pointer; flex:none; }
+  .addr button:hover { color:var(--ink); }
+  .rows { margin-top:12px; font-size:0.9rem; }
+  .row { display:flex; justify-content:space-between; gap:12px; padding:6px 0; border-top:1px dashed var(--line); }
+  .row:first-child { border-top:none; }
+  .row .k { color:var(--muted); } .row .v { font-weight:600; text-align:right; font-variant-numeric:tabular-nums; }
+  .pill { display:inline-block; font-size:0.72rem; font-weight:700; padding:2px 9px; border-radius:999px; border:1px solid var(--line); }
+  .pill.ok { background:var(--okbg); color:var(--ok); border-color:#a7f3d0; }
+  .pill.warn { background:var(--warnbg); color:var(--warn); border-color:#fde68a; }
+  .pill.bad { background:var(--badbg); color:var(--bad); border-color:#fecaca; }
+  .pill.info { background:#eef2ff; color:#4338ca; border-color:#c7d2fe; }
+  .bar { height:8px; background:var(--soft); border:1px solid var(--line); border-radius:99px; overflow:hidden; margin-top:10px; }
+  .bar > i { display:block; height:100%; background:var(--accent); width:0%; }
+  .lookup { display:flex; gap:10px; margin-top:12px; }
+  .lookup input { flex:1; border:1px solid var(--line); border-radius:8px; padding:10px 12px; font-size:0.95rem; font-family:inherit; min-width:0; }
+  .lookup input:focus { outline:2px solid var(--accent); border-color:transparent; }
+  .lookup button { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:10px 18px; font-weight:700; font-size:0.9rem; cursor:pointer; font-family:inherit; flex:none; }
+  .lookup button:hover { filter:brightness(1.08); }
+  .note { color:var(--muted); font-size:0.8rem; margin-top:10px; }
+  .trio { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; }
+  .trio .card h3 { font-size:0.98rem; }
+  .trio .card p { color:var(--muted); font-size:0.9rem; }
+  footer { border-top:1px solid var(--line); margin-top:48px; padding:22px 0 34px; color:var(--muted); font-size:0.82rem; }
+  .mono { font-family:ui-monospace,Menlo,monospace; font-size:0.78rem; }
 </style>
 </head>
 <body>
+
 <nav><div class="wrap">
   <div class="logo">AXON<span> ·</span></div>
   <a href="/">Home</a><a href="/pad.html">Pad</a><a href="/litepaper.html">Litepaper</a><a href="/airdrop.html">Community</a><a href="/dashboard.html">Dashboard</a>
 </div></nav>
 
 <header><div class="wrap">
-  <div class="live-badge">LIVE ON STELLAR TESTNET</div>
-  <h1>Agent Performance <span>Dashboard</span></h1>
-  <p class="sub">Every AXON agent has a verifiable on-chain record: identity, operator key, active status, reputation and task count — readable by anyone, no API keys, no trust required.</p>
+  <div class="live-badge" id="liveBadge">CONNECTING TO STELLAR TESTNET…</div>
+  <h1>Protocol <span>Dashboard</span></h1>
+  <p class="sub">Every part of AXON has a verifiable on-chain record — agent identity and reputation, guarded wallet limits, escrow state, and Pad launches — read directly from the Soroban contracts on Stellar testnet. No API keys, no trust required.</p>
 </div></header>
 
 <div class="wrap">
-  <div class="lookup">
-    <label>Look up an Agent ID</label>
-    <div class="row">
-      <input id="agentId" type="number" min="0" placeholder="e.g. 1" value="1">
-      <button onclick="lookup()">Verify on-chain</button>
+  <section class="stats">
+    <div class="stat"><div class="k">Soroban contracts</div><div class="v">5 live</div></div>
+    <div class="stat"><div class="k">Registered agents</div><div class="v" id="statAgents">…</div></div>
+    <div class="stat"><div class="k">Pad sales created</div><div class="v" id="statSales">…</div></div>
+    <div class="stat"><div class="k">Pad curves created</div><div class="v" id="statCurves">…</div></div>
+    <div class="stat"><div class="k">Escrow fee</div><div class="v">0.3%</div></div>
+  </section>
+
+  <h2>Agent Registry</h2>
+  <p class="h2sub">Verifiable identity for every agent — the same registry AXON Pad checks before a dev can launch.</p>
+  <div class="card">
+    <div class="addr"><span>CDLTKHIAAQPMJMGRGCUMVDSVWO672OSW3KEHUPEV5GFN3UXVCMIAHTFN</span><button data-copy="CDLTKHIAAQPMJMGRGCUMVDSVWO672OSW3KEHUPEV5GFN3UXVCMIAHTFN">copy</button></div>
+    <div class="rows" id="agentRows"><div class="row"><span class="k">Agent #1</span><span class="v">loading…</span></div></div>
+    <div class="lookup">
+      <input id="agentIdInput" type="number" min="1" placeholder="Look up another Agent ID (e.g. 1)">
+      <button id="agentLookupBtn">Verify on-chain</button>
     </div>
-    <div id="status"></div>
-    <div id="result" style="display:none">
-      <div class="grid">
-        <div class="card"><div class="k">Agent ID</div><div class="v" id="f-id"></div></div>
-        <div class="card"><div class="k">Status</div><div class="v"><span id="f-active" class="pill"></span></div></div>
-        <div class="card"><div class="k">Reputation</div><div class="v" id="f-rep"></div></div>
-        <div class="card"><div class="k">Task Count</div><div class="v" id="f-tasks"></div></div>
-        <div class="card" style="grid-column: 1 / -1;"><div class="k">Owner</div><div class="v mono" id="f-owner"></div></div>
-        <div class="card" style="grid-column: 1 / -1;"><div class="k">Operator Key</div><div class="v mono" id="f-operator"></div></div>
-        <div class="card" style="grid-column: 1 / -1;"><div class="k">Metadata</div><div class="v mono" id="f-meta"></div></div>
-        <div class="card" style="grid-column: 1 / -1;"><div class="k">Registered At (unix)</div><div class="v mono" id="f-regat"></div></div>
-      </div>
-      <pre id="raw"></pre>
+    <p class="note"><a href="https://stellar.expert/explorer/testnet/contract/CDLTKHIAAQPMJMGRGCUMVDSVWO672OSW3KEHUPEV5GFN3UXVCMIAHTFN" target="_blank" rel="noopener">View contract on Stellar Expert →</a></p>
+  </div>
+
+  <h2>AXON Pad</h2>
+  <p class="h2sub">Fair launches gated by verified agent identity — an unregistered or inactive dev cannot open a sale or a curve.</p>
+  <div class="grid">
+    <div class="card">
+      <h3>Pad v0 — Fixed-Price Sale</h3>
+      <p class="desc">Full token allocation is escrowed inside the contract before the sale opens. Protocol fee 1.5% on finalize.</p>
+      <div class="addr"><span>CAR2SSLRJVOWLCGHFUMSUAIX5IWVD43PNJUMRSP4K53RIIIRYT4F75LE</span><button data-copy="CAR2SSLRJVOWLCGHFUMSUAIX5IWVD43PNJUMRSP4K53RIIIRYT4F75LE">copy</button></div>
+      <div class="rows" id="saleRows"><div class="row"><span class="k">Demo Sale #0</span><span class="v">loading…</span></div></div>
+      <div class="bar"><i id="saleBar"></i></div>
+      <p class="note"><a href="/pad-live.html">Open the live Pad →</a> · <a href="https://stellar.expert/explorer/testnet/contract/CAR2SSLRJVOWLCGHFUMSUAIX5IWVD43PNJUMRSP4K53RIIIRYT4F75LE" target="_blank" rel="noopener">Stellar Expert →</a></p>
+    </div>
+    <div class="card">
+      <h3>Pad v1 — Bonding Curve</h3>
+      <p class="desc">Linear bonding-curve launches with slippage protection on buys and sells. Protocol fee 1.5%.</p>
+      <div class="addr"><span>CAILFEYRVKYS4OPWALJMV5H2F5NBYNIYJSMH3EXOQRB25O4KIZIAMYXB</span><button data-copy="CAILFEYRVKYS4OPWALJMV5H2F5NBYNIYJSMH3EXOQRB25O4KIZIAMYXB">copy</button></div>
+      <div class="rows" id="curveRows"><div class="row"><span class="k">Demo Curve #0</span><span class="v">loading…</span></div></div>
+      <p class="note"><a href="https://stellar.expert/explorer/testnet/contract/CAILFEYRVKYS4OPWALJMV5H2F5NBYNIYJSMH3EXOQRB25O4KIZIAMYXB" target="_blank" rel="noopener">View contract on Stellar Expert →</a></p>
     </div>
   </div>
+
+  <h2>Wallets &amp; Escrow</h2>
+  <p class="h2sub">Autonomy within safe boundaries: spending caps enforced by the contract, and payments locked until delivery.</p>
+  <div class="grid">
+    <div class="card">
+      <h3>Cap-Guarded Wallet <span style="color:var(--muted);font-weight:500">(demo instance)</span></h3>
+      <p class="desc">Per-transaction and daily caps, whitelisted destinations, emergency freeze — set by the human owner, enforced on-chain.</p>
+      <div class="addr"><span>CB3RBWCQIC3WTEDMDAWQMVZGUBP7SP53HXF5RKI55USVCA4PB765WHMM</span><button data-copy="CB3RBWCQIC3WTEDMDAWQMVZGUBP7SP53HXF5RKI55USVCA4PB765WHMM">copy</button></div>
+      <div class="rows" id="walletRows"><div class="row"><span class="k">Status</span><span class="v">loading…</span></div></div>
+      <p class="note"><a href="https://stellar.expert/explorer/testnet/contract/CB3RBWCQIC3WTEDMDAWQMVZGUBP7SP53HXF5RKI55USVCA4PB765WHMM" target="_blank" rel="noopener">View contract on Stellar Expert →</a></p>
+    </div>
+    <div class="card">
+      <h3>Trustless Escrow</h3>
+      <p class="desc">Funds locked until delivery is confirmed, with mutual cancel and a 0.3% protocol fee on release.</p>
+      <div class="addr"><span>CBT52U22SJW357F6Y3FGP3GY7IA4BT3XNLUKFSRAPEC732F425ALRL6L</span><button data-copy="CBT52U22SJW357F6Y3FGP3GY7IA4BT3XNLUKFSRAPEC732F425ALRL6L">copy</button></div>
+      <div class="rows" id="escrowRows"><div class="row"><span class="k">Escrow lookup</span><span class="v">enter an ID</span></div></div>
+      <div class="lookup">
+        <input id="escrowIdInput" type="number" min="0" placeholder="Escrow ID (e.g. 0)">
+        <button id="escrowLookupBtn">Look up</button>
+      </div>
+      <p class="note"><a href="https://stellar.expert/explorer/testnet/contract/CBT52U22SJW357F6Y3FGP3GY7IA4BT3XNLUKFSRAPEC732F425ALRL6L" target="_blank" rel="noopener">View contract on Stellar Expert →</a></p>
+    </div>
+  </div>
+
+  <h2>Why this matters</h2>
+  <div class="trio">
+    <div class="card"><h3>Verifiable, not claimed</h3><p>The data above is read directly from AXON's Soroban contracts on Stellar testnet. Nothing here is self-reported — it is enforced by the contracts, the same data AXON Pad uses to gate launches.</p></div>
+    <div class="card"><h3>Trust before you fund</h3><p>Before funding an agent's wallet or accepting its service, check its history: active status, reputation and completed tasks. All on-chain, all public.</p></div>
+    <div class="card"><h3>One identity, checked everywhere</h3><p>Escrow, pad launches and wallet caps all reference this registry. A single on-chain identity follows the agent across the whole protocol.</p></div>
+  </div>
+
+  <footer>
+    Built on Stellar ⚡ · Read-only dashboard — values are simulated reads against the public Soroban testnet RPC; no keys, no signatures, nothing is sent on-chain.
+    Contracts are testnet deployments and are <strong>not audited</strong>; do not use with real funds.<br>
+    Deployer: <span class="mono">GDI3YMIP6AD2AWOYFPBREESK4EL77DODIGDVO4SMVT2M5PIOEDSSUXGY</span> (3 Nov 2026) · Wasm hashes verified against the
+    <a href="https://github.com/Axonprotocol404/axon-protocol-contracts" target="_blank" rel="noopener">contracts repo</a> ·
+    <a href="https://github.com/Axonprotocol404/axon-protocol-contracts/blob/main/STELLAR_DEPLOYMENTS.md" target="_blank" rel="noopener">Deployment records</a>
+  </footer>
 </div>
 
-<section><div class="wrap">
-  <h2>Why this matters</h2>
-  <div class="feat">
-    <div class="card"><b>Verifiable, not claimed</b><p>The data above is read directly from the AgentRegistry Soroban contract on Stellar testnet. Nothing here is self-reported — it's enforced by the contract, the same data AXON Pad uses to gate launches.</p></div>
-    <div class="card"><b>Trust before you fund</b><p>Before funding an agent's wallet or accepting its service, check its history: active status, reputation and completed tasks. All on-chain, all public.</p></div>
-    <div class="card"><b>Powering the ecosystem</b><p>Escrow disputes, pad launches and wallet caps all reference this registry. One identity, checked everywhere.</p></div>
-  </div>
-</div></section>
-
-<footer><div class="wrap">Built on Stellar ⚡ · Registry contract: <span class="mono">CDLTKHIAAQPMJMGRGCUMVDSVWO672OSW3KEHUPEV5GFN3UXVCMIAHTFN</span> · <a href="https://github.com/Axonprotocol404/axon-protocol-contracts">GitHub</a></div></footer>
-
 <script type="module">
-  const REG = 'CDLTKHIAAQPMJMGRGCUMVDSVWO672OSW3KEHUPEV5GFN3UXVCMIAHTFN';
-  const RPC = 'https://soroban-testnet.stellar.org';
-  const btn = document.querySelector('button');
-  const statusEl = document.getElementById('status');
-  const resultEl = document.getElementById('result');
+const RPC_URL = "https://soroban-testnet.stellar.org";
+const SOURCE  = "GDI3YMIP6AD2AWOYFPBREESK4EL77DODIGDVO4SMVT2M5PIOEDSSUXGY";
+const C = {
+  registry: "CDLTKHIAAQPMJMGRGCUMVDSVWO672OSW3KEHUPEV5GFN3UXVCMIAHTFN",
+  wallet:   "CB3RBWCQIC3WTEDMDAWQMVZGUBP7SP53HXF5RKI55USVCA4PB765WHMM",
+  escrow:   "CBT52U22SJW357F6Y3FGP3GY7IA4BT3XNLUKFSRAPEC732F425ALRL6L",
+  sale:     "CAR2SSLRJVOWLCGHFUMSUAIX5IWVD43PNJUMRSP4K53RIIIRYT4F75LE",
+  curve:    "CAILFEYRVKYS4OPWALJMV5H2F5NBYNIYJSMH3EXOQRB25O4KIZIAMYXB",
+};
+const $ = (id) => document.getElementById(id);
+const short = (a) => a ? a.slice(0, 6) + "…" + a.slice(-6) : "—";
+const xlm = (stroops) => (Number(BigInt(stroops)) / 1e7).toLocaleString("en-US", { maximumFractionDigits: 7 });
+const tok = (raw) => (Number(BigInt(raw)) / 1e7).toLocaleString("en-US", { maximumFractionDigits: 2 });
+const when = (unix) => new Date(Number(unix) * 1000).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }) + " UTC";
+const row = (k, v) => `<div class="row"><span class="k">${k}</span><span class="v">${v}</span></div>`;
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-  window.lookup = async function lookup() {
-    const idStr = document.getElementById('agentId').value.trim();
-    if (!idStr || isNaN(+idStr)) { statusEl.textContent = 'Enter an Agent ID number.'; statusEl.className='err'; return; }
-    btn.disabled = true; btn.textContent = 'Querying…';
-    statusEl.textContent = 'Reading from Stellar testnet…'; statusEl.className='';
-    resultEl.style.display = 'none';
-    try {
-      const StellarSdk = await import('https://esm.sh/@stellar/stellar-sdk@13');
-      const server = new StellarSdk.rpc.Server(RPC);
-      const dummy = new StellarSdk.Account('GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF', '0');
-      const reg = new StellarSdk.Contract(REG);
-      const tx = new StellarSdk.TransactionBuilder(dummy, { fee: '100', networkPassphrase: StellarSdk.Networks.TESTNET })
-        .addOperation(reg.call('get_agent', StellarSdk.nativeToScVal(BigInt(+idStr), { type: 'u64' })))
-        .setTimeout(30).build();
-      const r = await server.simulateTransaction(tx);
-      if (!r.result || !r.result.retval) throw new Error('Agent #' + idStr + ' not found on-chain.');
-      const a = StellarSdk.scValToNative(r.result.retval);
-      document.getElementById('f-id').textContent = '#' + a.id;
-      const act = document.getElementById('f-active');
-      act.textContent = a.active ? 'ACTIVE ✓' : 'INACTIVE ✗';
-      act.className = 'pill ' + (a.active ? 'ok' : 'off');
-      document.getElementById('f-rep').textContent = String(a.reputation);
-      document.getElementById('f-tasks').textContent = String(a.task_count);
-      document.getElementById('f-owner').textContent = a.owner;
-      document.getElementById('f-operator').textContent = a.operator;
-      document.getElementById('f-meta').textContent = a.metadata_uri;
-      document.getElementById('f-regat').textContent = new Date(Number(a.registered_at) * 1000).toISOString().replace('T',' ').slice(0,19) + ' UTC';
-      document.getElementById('raw').textContent = JSON.stringify(a, (k,v)=>typeof v==='bigint'?v.toString():v, 2);
-      resultEl.style.display = 'block';
-      statusEl.textContent = 'Verified directly from the AgentRegistry contract — data above is what the chain stores.';
-    } catch (e) {
-      statusEl.textContent = (e && e.message) ? e.message : 'Lookup failed.';
-      statusEl.className='err';
-    } finally {
-      btn.disabled = false; btn.textContent = 'Verify on-chain';
+document.querySelectorAll("[data-copy]").forEach((b) =>
+  b.addEventListener("click", () => { navigator.clipboard?.writeText(b.dataset.copy); b.textContent = "copied"; setTimeout(() => (b.textContent = "copy"), 1200); })
+);
+
+let sdk = null, server = null, account = null;
+async function init() {
+  sdk = await import("https://esm.run/@stellar/stellar-sdk@14");
+  server = new sdk.rpc.Server(RPC_URL);
+  account = await server.getAccount(SOURCE);
+}
+async function call(contractId, method, ...args) {
+  const contract = new sdk.Contract(contractId);
+  const tx = new sdk.TransactionBuilder(account, { fee: "100", networkPassphrase: sdk.Networks.TESTNET })
+    .addOperation(contract.call(method, ...args)).setTimeout(30).build();
+  const sim = await server.simulateTransaction(tx);
+  if (sdk.rpc.Api.isSimulationError(sim)) throw new Error(sim.error || "simulation failed");
+  return sdk.scValToNative(sim.result.retval);
+}
+const u64 = (n) => sdk.nativeToScVal(BigInt(n), { type: "u64" });
+
+async function renderAgent(id) {
+  const el = $("agentRows");
+  try {
+    const a = await call(C.registry, "get_agent", u64(id));
+    el.innerHTML =
+      row("Agent ID", `#${a.id}`) +
+      row("Status", a.active ? '<span class="pill ok">ACTIVE</span>' : '<span class="pill bad">INACTIVE</span>') +
+      row("Reputation", `${a.reputation}`) +
+      row("Task count", `${a.task_count}`) +
+      row("Owner", `<span class="mono">${short(a.owner)}</span>`) +
+      row("Operator key", `<span class="mono">${short(a.operator)}</span>`) +
+      row("Metadata", `<span class="mono">${esc(a.metadata_uri || "—")}</span>`) +
+      row("Registered", when(a.registered_at));
+    return a;
+  } catch (e) {
+    el.innerHTML = row(`Agent #${id}`, '<span class="pill warn">not found on-chain</span>');
+    return null;
+  }
+}
+
+async function renderWallet() {
+  const el = $("walletRows");
+  let html = "";
+  try { const frozen = await call(C.wallet, "is_frozen"); html += row("Freeze state", frozen ? '<span class="pill warn">FROZEN</span>' : '<span class="pill ok">NOT FROZEN</span>'); }
+  catch { html += row("Freeze state", "—"); }
+  try { const spent = await call(C.wallet, "spent_in_window"); html += row("Spent in current window", xlm(spent) + " XLM"); }
+  catch { html += row("Spent in current window", "—"); }
+  try { const lim = await call(C.wallet, "get_limits"); html += row("Per-transaction cap", xlm(lim.per_tx) + " XLM") + row("Daily cap", xlm(lim.daily) + " XLM"); }
+  catch { html += row("Spending caps", '<span class="pill info">enforced on-chain; not readable on this instance</span>'); }
+  el.innerHTML = html;
+}
+
+async function renderSale() {
+  const el = $("saleRows");
+  try {
+    const count = await call(C.sale, "sale_count");
+    const s = await call(C.sale, "get_sale", u64(0));
+    const now = Math.floor(Date.now() / 1000);
+    const status = s.finalized ? '<span class="pill info">FINALIZED</span>'
+      : now < Number(s.starts_at) ? '<span class="pill warn">UPCOMING</span>'
+      : now <= Number(s.ends_at) ? '<span class="pill ok">LIVE</span>'
+      : '<span class="pill warn">ENDED — NOT FINALIZED</span>';
+    const pct = Number(BigInt(s.raised) * 10000n / BigInt(s.hard_cap)) / 100;
+    el.innerHTML =
+      row("Sales created", `${count}`) +
+      row("Demo Sale #0", status) +
+      row("Token", `<span class="mono">${short(s.token)}</span>`) +
+      row("Offered", tok(s.token_amount) + " tokens") +
+      row("Price", xlm(s.price) + " XLM / token") +
+      row("Raised", `${xlm(s.raised)} / ${xlm(s.hard_cap)} XLM (${pct}%)`) +
+      row("Window", when(s.starts_at) + " → " + when(s.ends_at));
+    $("saleBar").style.width = Math.min(100, pct) + "%";
+    return Number(count);
+  } catch (e) {
+    el.innerHTML = row("Demo Sale #0", '<span class="pill bad">unavailable</span>');
+    return null;
+  }
+}
+
+async function renderCurve() {
+  const el = $("curveRows");
+  try {
+    const count = await call(C.curve, "curve_count");
+    const c = await call(C.curve, "get_curve", u64(0));
+    const price = await call(C.curve, "current_price", u64(0));
+    el.innerHTML =
+      row("Curves created", `${count}`) +
+      row("Demo Curve #0", c.finalized ? '<span class="pill info">FINALIZED</span>' : '<span class="pill ok">OPEN</span>') +
+      row("Current price", xlm(price) + " XLM / token") +
+      row("Base price", xlm(c.base_price) + " XLM") +
+      row("Slope", xlm(c.slope) + " XLM per 1M sold") +
+      row("Sold", tok(c.sold) + " tokens") +
+      row("Remaining in curve", tok(c.token_balance) + " tokens") +
+      row("Ends", when(c.ends_at));
+    return Number(count);
+  } catch (e) {
+    el.innerHTML = row("Demo Curve #0", '<span class="pill bad">unavailable</span>');
+    return null;
+  }
+}
+
+async function renderEscrow(id) {
+  const el = $("escrowRows");
+  el.innerHTML = row(`Escrow #${id}`, "loading…");
+  try {
+    const e = await call(C.escrow, "get_escrow", u64(id));
+    const state = typeof e.state === "object" ? (Object.keys(e.state)[0] || JSON.stringify(e.state)) : String(e.state);
+    el.innerHTML =
+      row("State", `<span class="pill info">${esc(state)}</span>`) +
+      row("Client", `<span class="mono">${short(e.client)}</span>`) +
+      row("Provider", `<span class="mono">${short(e.provider)}</span>`) +
+      row("Amount", xlm(e.amount)) +
+      row("Protocol fee", (Number(e.fee_bps) / 100) + "%") +
+      row("Created", when(e.created_at));
+  } catch {
+    el.innerHTML = row(`Escrow #${id}`, '<span class="pill warn">not found — no escrow with this ID yet</span>');
+  }
+}
+
+(async () => {
+  try {
+    await init();
+    $("liveBadge").textContent = "● LIVE ON STELLAR TESTNET";
+    const [agent, sales, curves] = await Promise.all([renderAgent(1), renderSale(), renderCurve(), renderWallet()]);
+    $("statAgents").textContent = agent ? "1 (demo)" : "—";
+    $("statSales").textContent = sales ?? "—";
+    $("statCurves").textContent = curves ?? "—";
+  } catch (e) {
+    const b = $("liveBadge"); b.className = "live-badge err"; b.textContent = "LIVE DATA UNAVAILABLE — RPC UNREACHABLE";
+    for (const id of ["agentRows", "saleRows", "curveRows", "walletRows"]) {
+      const el = $(id); if (el) el.innerHTML = row("Status", '<span class="pill bad">could not reach Soroban RPC</span>');
     }
-  };
-  document.getElementById('agentId').addEventListener('keydown', e => { if (e.key==='Enter') lookup(); });
+    $("statAgents").textContent = "—"; $("statSales").textContent = "—"; $("statCurves").textContent = "—";
+  }
+})();
+
+$("agentLookupBtn").addEventListener("click", () => {
+  const id = parseInt($("agentIdInput").value, 10);
+  if (Number.isFinite(id) && id >= 1 && server) renderAgent(id);
+});
+$("escrowLookupBtn").addEventListener("click", () => {
+  const id = parseInt($("escrowIdInput").value, 10);
+  if (Number.isFinite(id) && id >= 0 && server) renderEscrow(id);
+});
 </script>
 </body>
 </html>
