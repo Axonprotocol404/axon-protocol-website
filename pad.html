@@ -87,7 +87,7 @@ footer a:hover{color:var(--accent)}
 <div class="cell"><small>Raised</small><b id="raised">—</b></div>
 </div>
 <div class="bar"><i id="pbar"></i></div>
-<div class="card-f"><span>Allocation escrowed: <b>500,000 DEMO</b> ✓ in contract</span><code id="addr">CAR2SSLRJVOWLCGHFUMSUAIX5IWVD43PNJUMRSP4K53RIIIRYT4F75LE</code></div>
+<div class="card-f"><span>Allocation escrowed: <b>500,000 DEMO</b> ✓ in contract</span><code id="addr">CCFRQY2IEBGROVPMK2MHKO35IJSSDYUEDTOHJJQPVFLZQFCQQPKARD5B</code></div>
 </div>
 </section>
 
@@ -117,7 +117,7 @@ footer a:hover{color:var(--accent)}
   try {
     const { default: StellarSdk } = await import('https://cdn.jsdelivr.net/npm/@stellar/stellar-sdk@13/dist/stellar-sdk.min.js');
     const server = new StellarSdk.rpc.Server('https://soroban-testnet.stellar.org:443');
-    const saleId = 'CAR2SSLRJVOWLCGHFUMSUAIX5IWVD43PNJUMRSP4K53RIIIRYT4F75LE';
+    const saleId = 'CCFRQY2IEBGROVPMK2MHKO35IJSSDYUEDTOHJJQPVFLZQFCQQPKARD5B';
     const contract = new StellarSdk.Address(saleId);
     // build read call to get_sale(sale_id=0) via simulateTransaction
     // Simplified: use fetch to horizon-free RPC getLedgerEntries is complex; fallback static display if fails.
