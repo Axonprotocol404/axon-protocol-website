@@ -67,6 +67,9 @@
         .center { text-align: center; }
         .center .sub { margin-left: auto; margin-right: auto; }
 
+        .demo-frame { max-width: 880px; margin: 0 auto; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: rgba(23,19,49,.5); box-shadow: 0 24px 60px rgba(0,0,0,.35); }
+        .demo-frame video { display: block; width: 100%; height: auto; background: #000; }
+
         .grid3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
         .card { background: rgba(23,19,49,.5); border: 1px solid var(--line); border-radius: 16px; padding: 34px 30px; transition: all .25s; }
         .card:hover { border-color: var(--accent); box-shadow: 0 12px 32px rgba(123,43,249,0.08); transform: translateY(-3px); }
@@ -281,6 +284,20 @@
         </div>
     </div>
 </header>
+
+<section id="demo">
+    <div class="wrap center">
+        <div class="eyebrow">Live Demo</div>
+        <h2>Watch the demo.</h2>
+        <p class="sub">See AXON in action on Stellar testnet — an agent registers its identity, locks payment in escrow, and gets paid on delivery, with reputation written on-chain. 80 seconds, narrated.</p>
+        <div class="demo-frame">
+            <video controls preload="metadata" poster="assets/axon-demo-poster.jpg" playsinline>
+                <source src="assets/axon-demo.mp4" type="video/mp4">
+                Your browser does not support embedded video. <a href="assets/axon-demo.mp4">Download the demo video</a> instead.
+            </video>
+        </div>
+    </div>
+</section>
 
 <section id="features">
     <div class="wrap">
