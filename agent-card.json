@@ -10,7 +10,7 @@
       "x402Endpoint": "Exists only once the paid endpoint is live (build Days 7-8). x402Support below is the build target: it may only stay true in the filed card if the endpoint genuinely returns an x402 challenge at filing time (plan §6.5 honesty rule)"
     },
     "schemaNote": "Field-level CIS-8004 / ERC-8004 Agent Card schema is confirmed against the Concordium technical reference during build Days 1-3 (plan §4 Q16). Field names below follow the ERC-8004 Agent Card conventions and the content draft in plan §6.5; adjust names to the confirmed schema at registration time, do not invent values.",
-    "status": "DRAFT — prepared 16 Nov 2026; reviewed against local facts 22 Nov 2026; badge extension (first-pass, tokenAddress null) + verified testnet registry index added 23 Nov 2026. Content values are real (read on-chain 15 Nov 2026); Concordium registration values are placeholders until the agent is registered in the testnet Agent Registry."
+    "status": "DRAFT — prepared 16 Nov 2026; reviewed against local facts 22 Nov 2026; badge extension (first-pass, tokenAddress null) + verified testnet registry index added 23 Nov 2026. Content values are real (read on-chain 15 Nov 2026); Concordium registration values are placeholders until the agent is registered in the testnet Agent Registry. Registration account changed 23 Nov 2026 to the founder's browser-wallet testnet account 3mAAnEiUz1vGkkH8JGc1RLpAjv6CK9xWPbV2W448tTtquHtbsK (created in the Concordium Wallet for Web extension under a testnet-IP identity): the registry DApp's final Sign & Register step requires the browser wallet extension, which the original testnet-app account 3LxcKedgpSRaNZxdzhUHDFcz5ojDJQFrMbnw6rvkoEwM8ZRj19 cannot provide; that account remains the funding source."
   },
   "active": true,
   "axon": {
@@ -46,7 +46,7 @@
       "chain": "concordium-testnet",
       "did": "did:ccd:TODO — assigned at registration (build Day 4)",
       "externalKeyLink": "TODO_Q13 — CIS-8 link to the agent's home-chain address. Stellar (Ed25519) support is unverified (plan §4 Q13): if unsupported, link the Base Sepolia EVM address instead (AXON Escrow on Base Sepolia: 0x530326ABd9580Ff0739182424DacB5e6A344a511) and keep the Stellar registration above as the featured home-chain record.",
-      "paymentAccount": "3LxcKedgpSRaNZxdzhUHDFcz5ojDJQFrMbnw6rvkoEwM8ZRj19",
+      "paymentAccount": "3mAAnEiUz1vGkkH8JGc1RLpAjv6CK9xWPbV2W448tTtquHtbsK",
       "protocol": "Concordium Agent Registry (CIS-8004, ERC-8004-compatible)",
       "registryContractIndex": "ccd:4221332d34e1694168c2a0c0b3fd0f27:12802.0",
       "agentRegistry": "ccd:4221332d34e1694168c2a0c0b3fd0f27:12802.0"
@@ -83,7 +83,7 @@
         "params": {
           "tokenAddress": null,
           "owner": {
-            "account": "ccd:4221332d34e1694168c2a0c0b3fd0f27:3LxcKedgpSRaNZxdzhUHDFcz5ojDJQFrMbnw6rvkoEwM8ZRj19"
+            "account": "ccd:4221332d34e1694168c2a0c0b3fd0f27:3mAAnEiUz1vGkkH8JGc1RLpAjv6CK9xWPbV2W448tTtquHtbsK"
           },
           "contracts": {
             "cis8004": "ccd:4221332d34e1694168c2a0c0b3fd0f27:12802.0",
