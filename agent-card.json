@@ -1,0 +1,102 @@
+{
+  "_draft": {
+    "placeholders": {
+      "badge": "First-pass badge block present (official two-pass flow, docs.concordium.com concordium-badge): tokenAddress null until registration mints the CIS-8004 NFT; verifyUrl omitted until a badge exists to check — verification.service/mcp/docs are present. Second pass after registration fills tokenAddress + verifyUrl and re-hashes.",
+      "cardSha256": "Computed once this card is hosted at its stable URL; the hash is anchored on-chain at registration. Hash lives in docs/testnet-facts.md, never inside this file (self-reference).",
+      "did": "Assigned at CIS-8004 registration (build Day 4, 22 Nov 2026)",
+      "externalKeyLink": "TODO_Q13 — whether Stellar/Ed25519 keys can be linked via CIS-8 is unconfirmed. If unsupported, the Base Sepolia EVM address in registrations[1].externalKeyLink is the link target (documented path).",
+      "fieldSchema": "Q16 PARTIAL 23 Nov 2026: badge extension schema confirmed normative from official Concordium badge docs (uri .../concordium-badge/v1, params tokenAddress/owner/contracts/verify/verification). Full field-level required-vs-optional schema for the rest of the card still unconfirmed; field names below follow ERC-8004 conventions and plan 6.5.",
+      "registryContractIndex": "RESOLVED 23 Nov 2026: testnet CIS-8004 index 12802, verified via Concordium's own badge-check MCP endpoint (expected.contracts cis8004 12802,0). CIS-8 testnet index 12801, same source.",
+      "x402Endpoint": "Exists only once the paid endpoint is live (build Days 7-8). x402Support below is the build target: it may only stay true in the filed card if the endpoint genuinely returns an x402 challenge at filing time (plan §6.5 honesty rule)"
+    },
+    "schemaNote": "Field-level CIS-8004 / ERC-8004 Agent Card schema is confirmed against the Concordium technical reference during build Days 1-3 (plan §4 Q16). Field names below follow the ERC-8004 Agent Card conventions and the content draft in plan §6.5; adjust names to the confirmed schema at registration time, do not invent values.",
+    "status": "DRAFT — prepared 16 Nov 2026; reviewed against local facts 22 Nov 2026; badge extension (first-pass, tokenAddress null) + verified testnet registry index added 23 Nov 2026. Content values are real (read on-chain 15 Nov 2026); Concordium registration values are placeholders until the agent is registered in the testnet Agent Registry."
+  },
+  "active": true,
+  "axon": {
+    "contact": "oxonprotocol@gmail.com",
+    "stellarTestnetContracts": {
+      "agentRegistry": "CDLTKHIAAQPMJMGRGCUMVDSVWO672OSW3KEHUPEV5GFN3UXVCMIAHTFN",
+      "bondingCurve": "CAILFEYRVKYS4OPWALJMV5H2F5NBYNIYJSMH3EXOQRB25O4KIZIAMYXB",
+      "capGuardedWallet": "CB3RBWCQIC3WTEDMDAWQMVZGUBP7SP53HXF5RKI55USVCA4PB765WHMM",
+      "deployer": "GDI3YMIP6AD2AWOYFPBREESK4EL77DODIGDVO4SMVT2M5PIOEDSSUXGY",
+      "tokenSale": "CAR2SSLRJVOWLCGHFUMSUAIX5IWVD43PNJUMRSP4K53RIIIRYT4F75LE",
+      "trustlessEscrow": "CBT52U22SJW357F6Y3FGP3GY7IA4BT3XNLUKFSRAPEC732F425ALRL6L"
+    }
+  },
+  "description": "Demo agent of AXON Protocol, a trust layer for AI agents. Registered on Stellar testnet (home chain) in the AXON Agent Registry with an on-chain identity and reputation record, and accountable on Concordium: a verified human stands behind it (Verified by Concordium badge, identity never revealed), its spending is checked against a cap set by its verified owner, and it pays for gated services via x402 with sponsored fees.",
+  "external_url": "https://axonprotocol.site",
+  "name": "AXON Demo Agent",
+  "registrations": [
+    {
+      "active": true,
+      "agentId": 1,
+      "chain": "stellar-testnet",
+      "evidence": "Read live from the Soroban registry on 15 Nov 2026 (get_agent(1)); the registry holds exactly this one agent.",
+      "metadataUri": "ipfs://axon-demo-agent-1",
+      "operator": "GDI3YMIP6AD2AWOYFPBREESK4EL77DODIGDVO4SMVT2M5PIOEDSSUXGY",
+      "owner": "GDI3YMIP6AD2AWOYFPBREESK4EL77DODIGDVO4SMVT2M5PIOEDSSUXGY",
+      "protocol": "AXON Agent Registry (Soroban)",
+      "registeredAt": "2026-11-03T12:01:30Z",
+      "registryContract": "CDLTKHIAAQPMJMGRGCUMVDSVWO672OSW3KEHUPEV5GFN3UXVCMIAHTFN",
+      "reputation": 0,
+      "taskCount": 0
+    },
+    {
+      "chain": "concordium-testnet",
+      "did": "did:ccd:TODO — assigned at registration (build Day 4)",
+      "externalKeyLink": "TODO_Q13 — CIS-8 link to the agent's home-chain address. Stellar (Ed25519) support is unverified (plan §4 Q13): if unsupported, link the Base Sepolia EVM address instead (AXON Escrow on Base Sepolia: 0x530326ABd9580Ff0739182424DacB5e6A344a511) and keep the Stellar registration above as the featured home-chain record.",
+      "paymentAccount": "3LxcKedgpSRaNZxdzhUHDFcz5ojDJQFrMbnw6rvkoEwM8ZRj19",
+      "protocol": "Concordium Agent Registry (CIS-8004, ERC-8004-compatible)",
+      "registryContractIndex": "ccd:4221332d34e1694168c2a0c0b3fd0f27:12802.0",
+      "agentRegistry": "ccd:4221332d34e1694168c2a0c0b3fd0f27:12802.0"
+    }
+  ],
+  "services": [
+    {
+      "description": "Live dashboard reading AXON's five Stellar testnet contracts on-chain, including this agent's registry record. Gains a Concordium panel during the hackathon build.",
+      "endpoint": "https://axonprotocol.site/dashboard.html",
+      "name": "AXON dashboard"
+    },
+    {
+      "description": "Read this agent's AXON registry record and reputation on Stellar testnet.",
+      "endpoint": "TODO_DAY7 — set when the lookup endpoint ships (build Day 7)",
+      "name": "Reputation / registry lookup"
+    },
+    {
+      "description": "The gated AXON verification lookup (the same check AXON Pad applies before a listing), sold via x402 on Concordium testnet. Unpaid requests receive an x402 payment challenge; payment is cap-checked before signing and settles with facilitator-sponsored fees.",
+      "endpoint": "TODO_DAY7 — set when the paid endpoint ships (build Days 7-8)",
+      "name": "x402-paid verification lookup"
+    }
+  ],
+  "trust": {
+    "capPolicy": "Spending-cap policy (design: AXON Cap-Guarded Wallet, Stellar contract CB3RBWCQIC3WTEDMDAWQMVZGUBP7SP53HXF5RKI55USVCA4PB765WHMM): payment requests are checked against the owner-set cap before signing; over-cap requests are blocked and logged. Honest status: no cap values are set anywhere yet — the Stellar demo wallet's caps were never configured (live read, 15 Nov 2026) and the Concordium-side cap values are configured fresh in the policy layer during the build (Day 9).",
+    "verifiedByConcordium": "Badge block present in this card in first-pass form (tokenAddress null until registration mints the CIS-8004 NFT). Once registered, the badge proves a verified, accountable human stands behind the agent owner; reveals nothing about who they are."
+  },
+  "x402Support": true,
+  "capabilities": {
+    "extensions": [
+      {
+        "uri": "https://docs.concordium.com/a2a-extensions/concordium-badge/v1",
+        "description": "Verified by Concordium badge — on-chain agent identity in a CIS-8004 registry",
+        "required": false,
+        "params": {
+          "tokenAddress": null,
+          "owner": {
+            "account": "ccd:4221332d34e1694168c2a0c0b3fd0f27:3LxcKedgpSRaNZxdzhUHDFcz5ojDJQFrMbnw6rvkoEwM8ZRj19"
+          },
+          "contracts": {
+            "cis8004": "ccd:4221332d34e1694168c2a0c0b3fd0f27:12802.0",
+            "cis8": "ccd:4221332d34e1694168c2a0c0b3fd0f27:12801.0"
+          },
+          "verify": "Resolve tokenAddress via CIS-8004 agent_of; confirm owner + status is Active + card SHA-256 equals metadata_hash.",
+          "verification": {
+            "service": "Concordium Agent Registry",
+            "mcp": "https://agent-registry-mcp.concordium.com/mcp",
+            "docs": "https://docs.concordium.com/en/mainnet/technical-reference/agent-registry/concordium-badge.html"
+          }
+        }
+      }
+    ]
+  }
+}
