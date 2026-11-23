@@ -1,16 +1,16 @@
 {
   "_draft": {
     "placeholders": {
-      "badge": "First-pass badge block present (official two-pass flow, docs.concordium.com concordium-badge): tokenAddress null until registration mints the CIS-8004 NFT; verifyUrl omitted until a badge exists to check — verification.service/mcp/docs are present. Second pass after registration fills tokenAddress + verifyUrl and re-hashes.",
+      "badge": "Second pass DONE 23 Nov 2026: agent registered (token_id 1428, CIS-2 token address JyP9WgQhp3RBdNgHz3Hnv, owner 3mAAnEiUz1vGkkH8JGc1RLpAjv6CK9xWPbV2W448tTtquHtbsK, status Active per the registry indexer). tokenAddress filled in CAIP-19 form, agentWallet added, verification.verifyUrl filled (badge-check URL without a network query string, mirroring the format of badge_valid agents 1426/1427). REMAINING: the metadata_hash anchored on-chain at registration (be47596a3ee6e0daee1ad759eae8c6ddceec1a0ff597a4cd5cba15b37e30b255) equals the SHA-256 of NO served version of this card (checked raw + 8 transforms of all 4 local versions and both git blobs) — the owner must re-anchor via a registry metadata update so the on-chain hash equals this final card's SHA-256; badge-check must then report badge_valid true.",
       "cardSha256": "Computed once this card is hosted at its stable URL; the hash is anchored on-chain at registration. Hash lives in docs/testnet-facts.md, never inside this file (self-reference).",
-      "did": "Assigned at CIS-8004 registration (build Day 4, 22 Nov 2026)",
+      "did": "Registration completed 23 Nov 2026 (token_id 1428). The indexer API exposes no DID string; the did:ccd value is to be read verbatim from the registry DApp agent detail (Technical view) and recorded here — it is not badge-checked, so registrations[1] carries agentId + registeredAt instead until the DID is read.",
       "externalKeyLink": "TODO_Q13 — whether Stellar/Ed25519 keys can be linked via CIS-8 is unconfirmed. If unsupported, the Base Sepolia EVM address in registrations[1].externalKeyLink is the link target (documented path).",
       "fieldSchema": "Q16 PARTIAL 23 Nov 2026: badge extension schema confirmed normative from official Concordium badge docs (uri .../concordium-badge/v1, params tokenAddress/owner/contracts/verify/verification). Full field-level required-vs-optional schema for the rest of the card still unconfirmed; field names below follow ERC-8004 conventions and plan 6.5.",
       "registryContractIndex": "RESOLVED 23 Nov 2026: testnet CIS-8004 index 12802, verified via Concordium's own badge-check MCP endpoint (expected.contracts cis8004 12802,0). CIS-8 testnet index 12801, same source.",
       "x402Endpoint": "Exists only once the paid endpoint is live (build Days 7-8). x402Support below is the build target: it may only stay true in the filed card if the endpoint genuinely returns an x402 challenge at filing time (plan §6.5 honesty rule)"
     },
     "schemaNote": "Field-level CIS-8004 / ERC-8004 Agent Card schema is confirmed against the Concordium technical reference during build Days 1-3 (plan §4 Q16). Field names below follow the ERC-8004 Agent Card conventions and the content draft in plan §6.5; adjust names to the confirmed schema at registration time, do not invent values.",
-    "status": "DRAFT — prepared 16 Nov 2026; reviewed against local facts 22 Nov 2026; badge extension (first-pass, tokenAddress null) + verified testnet registry index added 23 Nov 2026. Content values are real (read on-chain 15 Nov 2026); Concordium registration values are placeholders until the agent is registered in the testnet Agent Registry. Registration account changed 23 Nov 2026 to the founder's browser-wallet testnet account 3mAAnEiUz1vGkkH8JGc1RLpAjv6CK9xWPbV2W448tTtquHtbsK (created in the Concordium Wallet for Web extension under a testnet-IP identity): the registry DApp's final Sign & Register step requires the browser wallet extension, which the original testnet-app account 3LxcKedgpSRaNZxdzhUHDFcz5ojDJQFrMbnw6rvkoEwM8ZRj19 cannot provide; that account remains the funding source."
+    "status": "DRAFT — prepared 16 Nov 2026; reviewed against local facts 22 Nov 2026; badge extension (first-pass, tokenAddress null) + verified testnet registry index added 23 Nov 2026. Content values are real (read on-chain 15 Nov 2026); Concordium registration values are placeholders until the agent is registered in the testnet Agent Registry. Registration account changed 23 Nov 2026 to the founder's browser-wallet testnet account 3mAAnEiUz1vGkkH8JGc1RLpAjv6CK9xWPbV2W448tTtquHtbsK (created in the Concordium Wallet for Web extension under a testnet-IP identity): the registry DApp's final Sign & Register step requires the browser wallet extension, which the original testnet-app account 3LxcKedgpSRaNZxdzhUHDFcz5ojDJQFrMbnw6rvkoEwM8ZRj19 cannot provide; that account remains the funding source. Registration COMPLETED 23 Nov 2026 09:12:22 WIB via the registry DApp connected to the mobile wallet (token_id 1428, status Active, agent_uri = this card's URL). Second-pass badge fields filled the same day; metadata-hash re-anchor pending (see the badge placeholder note)."
   },
   "active": true,
   "axon": {
@@ -44,7 +44,8 @@
     },
     {
       "chain": "concordium-testnet",
-      "did": "did:ccd:TODO — assigned at registration (build Day 4)",
+      "agentId": 1428,
+      "registeredAt": "2026-11-23T02:12:22Z",
       "externalKeyLink": "TODO_Q13 — CIS-8 link to the agent's home-chain address. Stellar (Ed25519) support is unverified (plan §4 Q13): if unsupported, link the Base Sepolia EVM address instead (AXON Escrow on Base Sepolia: 0x530326ABd9580Ff0739182424DacB5e6A344a511) and keep the Stellar registration above as the featured home-chain record.",
       "paymentAccount": "3mAAnEiUz1vGkkH8JGc1RLpAjv6CK9xWPbV2W448tTtquHtbsK",
       "protocol": "Concordium Agent Registry (CIS-8004, ERC-8004-compatible)",
@@ -71,7 +72,7 @@
   ],
   "trust": {
     "capPolicy": "Spending-cap policy (design: AXON Cap-Guarded Wallet, Stellar contract CB3RBWCQIC3WTEDMDAWQMVZGUBP7SP53HXF5RKI55USVCA4PB765WHMM): payment requests are checked against the owner-set cap before signing; over-cap requests are blocked and logged. Honest status: no cap values are set anywhere yet — the Stellar demo wallet's caps were never configured (live read, 15 Nov 2026) and the Concordium-side cap values are configured fresh in the policy layer during the build (Day 9).",
-    "verifiedByConcordium": "Badge block present in this card in first-pass form (tokenAddress null until registration mints the CIS-8004 NFT). Once registered, the badge proves a verified, accountable human stands behind the agent owner; reveals nothing about who they are."
+    "verifiedByConcordium": "Registered in the Concordium Agent Registry (testnet) as agent 1428 on 23 Nov 2026; the badge block in this card is in second-pass form (tokenAddress + verifyUrl filled). The badge proves a verified, accountable human stands behind the agent owner; it reveals nothing about who they are."
   },
   "x402Support": true,
   "capabilities": {
@@ -81,10 +82,11 @@
         "description": "Verified by Concordium badge — on-chain agent identity in a CIS-8004 registry",
         "required": false,
         "params": {
-          "tokenAddress": null,
+          "tokenAddress": "ccd:4221332d34e1694168c2a0c0b3fd0f27/cis-2:JyP9WgQhp3RBdNgHz3Hnv",
           "owner": {
             "account": "ccd:4221332d34e1694168c2a0c0b3fd0f27:3mAAnEiUz1vGkkH8JGc1RLpAjv6CK9xWPbV2W448tTtquHtbsK"
           },
+          "agentWallet": "ccd:4221332d34e1694168c2a0c0b3fd0f27:3mAAnEiUz1vGkkH8JGc1RLpAjv6CK9xWPbV2W448tTtquHtbsK",
           "contracts": {
             "cis8004": "ccd:4221332d34e1694168c2a0c0b3fd0f27:12802.0",
             "cis8": "ccd:4221332d34e1694168c2a0c0b3fd0f27:12801.0"
@@ -92,6 +94,7 @@
           "verify": "Resolve tokenAddress via CIS-8004 agent_of; confirm owner + status is Active + card SHA-256 equals metadata_hash.",
           "verification": {
             "service": "Concordium Agent Registry",
+            "verifyUrl": "https://agent-registry-mcp.concordium.com/v1/badge-check/JyP9WgQhp3RBdNgHz3Hnv",
             "mcp": "https://agent-registry-mcp.concordium.com/mcp",
             "docs": "https://docs.concordium.com/en/mainnet/technical-reference/agent-registry/concordium-badge.html"
           }
